@@ -1,0 +1,25 @@
+name: golang-ci
+on:
+  #Triggered by pull request
+  pull_request:
+    #Jobs are executed when any go file has changed
+    paths:
+      - "**.go"
+      - .github/workflows/golangci.yml
+jobs:
+  golangci-lint:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      #Check out my codes
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          #Use .golangci.yml as a config file
+          golangci_lint_flags: "--config=./.golangci.yml ./..."
+          fail_on_error: true
+          #Report job result with pull request 
+          reporter: "github-pr-review"
