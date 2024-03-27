@@ -1,0 +1,36 @@
+services:
+  golang:
+    image: golang
+    build: 
+      args:
+        - target=dev
+    environment:
+      - APP_CONTAINER_PORT=${APP_CONTAINER_PORT}
+      - APP_LOCAL_PORT=${APP_LOCAL_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_LOCAL_PORT=${POSTGRES_LOCAL_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_SSLMODE=${POSTGRES_SSLMODE}
+    volumes:
+      - .:/app
+    ports:
+      - "${APP_LOCAL_PORT}:${APP_CONTAINER_PORT}"
+    links:
+      - postgres
+  postgres:
+    image: postgres:latest
+    platform: linux/amd64
+    container_name: ${POSTGRES_HOST}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - english-example-sentence-data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_LOCAL_PORT}:${POSTGRES_PORT}"
+volumes:
+  english-example-sentence-data:
