@@ -21,18 +21,17 @@ func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func()
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 
-	//Create validator
+	//Create validator.
 	v := validator.New()
 
-	//Get DB handle
+	//Get DB handle.
 	//cleanup is used to close *sql.DB
 	dbHandle, cleanup, err := store.ConnectToDatabase(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
 
-	//r := store.Repository{Clocker: clock.RealClocker{}}
-	//Register http handler
+	//Register http handler.
 	c := &handler.CreateSentence{
 		Service: &service.CreateSentence{
 			Store: &store.Repository{
