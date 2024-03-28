@@ -29,10 +29,13 @@ func run(ctx context.Context) error {
 	log.Printf("URL: %v", url)
 
 	//Get routing info
-	mux := setUpRouting(ctx, cfg)
+	mux, cleanup, err := setUpRouting(ctx, cfg)
 	if err != nil {
 		return err
 	}
+
+	//Close *sql.DB
+	defer cleanup()
 
 	//Start http server
 	return runServer(ctx, listener, mux)
@@ -42,15 +45,4 @@ func main() {
 	if err := run(context.Background()); err != nil {
 		log.Printf("HTTP server did not work correctly: %v", err)
 	}
-	// config, err := config.New()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// dataSourceName := "host=" + config.DBHost + " port=" + config.DBPort + " user=" + config.DBUser + " password=" + config.DBPassword + " dbname=" + config.DBName + " sslmode=" + config.DBSSLMODE
-	// _, err = sql.Open("postgres", dataSourceName)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Println("Connected to postgresql successfully.")
 }
