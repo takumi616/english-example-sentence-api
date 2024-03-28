@@ -13,9 +13,9 @@ type ErrResponse struct {
 }
 
 func RespondJSON(ctx context.Context, w http.ResponseWriter, body any, status int) {
-	//Set response header
+	//Set response header.
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	//Get json encoding of body
+	//Get json encoding of body.
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		fmt.Printf("Failed to encode response correctly: %v", err)
@@ -23,14 +23,14 @@ func RespondJSON(ctx context.Context, w http.ResponseWriter, body any, status in
 		rsp := ErrResponse{
 			Message: http.StatusText(http.StatusInternalServerError),
 		}
-		//Write error response into response writer
+		//Write error response into response writer.
 		if err := json.NewEncoder(w).Encode(rsp); err != nil {
 			fmt.Printf("Failed to write error response correctly: %v", err)
 		}
 		return
 	}
 
-	//Write status code and response body into response writer
+	//Write status code and response body into response writer.
 	w.WriteHeader(status)
 	if _, err := fmt.Fprintf(w, "%s", bodyBytes); err != nil {
 		fmt.Printf("Failed to write response correctly: %v", err)

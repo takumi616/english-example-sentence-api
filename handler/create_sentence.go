@@ -12,7 +12,7 @@ type CreateSentence struct {
 	Validator *validator.Validate
 }
 
-// Http handler to add a new task
+// Http handler to create a new Sentence.
 func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req struct {
@@ -20,7 +20,7 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Body         string   `json:"body" validate:"required"`
 	}
 
-	//Convert json http request data into go struct type
+	//Convert json http request data into go struct type.
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
@@ -28,7 +28,7 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Validate request body
+	//Validate request body.
 	err := validator.New().Struct(req)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
@@ -37,7 +37,7 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Call service layer method using interface
+	//Call service layer method using interface.
 	sentenceID, err := c.Service.CreateNewSentence(ctx, req.Vocabularies, req.Body)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
@@ -46,7 +46,7 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Create json response body writing newly created record's id
+	//Create json response body writing newly created record's id.
 	rsp := struct {
 		SentenceID int `json:"sentence_id"`
 	}{SentenceID: sentenceID}
