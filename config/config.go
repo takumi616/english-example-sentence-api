@@ -5,7 +5,7 @@ import "github.com/caarlos0/env/v10"
 type Config struct {
 	Port       string `env:"APP_CONTAINER_PORT"`
 	DBHost     string `env:"POSTGRES_HOST"`
-	DBPort     string `env:"POSTGRES_LOCAL_PORT"`
+	DBPort     string `env:"POSTGRES_PORT"`
 	DBUser     string `env:"POSTGRES_USER"`
 	DBPassword string `env:"POSTGRES_PASSWORD"`
 	DBName     string `env:"POSTGRES_DB"`
