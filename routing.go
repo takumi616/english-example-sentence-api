@@ -25,22 +25,28 @@ func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func()
 	v := validator.New()
 
 	//Get DB handle.
-	//cleanup is used to close *sql.DB
+	//cleanup is used to close *sql.DB.
 	dbHandle, cleanup, err := store.ConnectToDatabase(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
 
 	//Register http handler.
+	repository := &store.Repository{DbHandle: dbHandle}
 	c := &handler.CreateSentence{
 		Service: &service.CreateSentence{
-			Store: &store.Repository{
-				DbHandle: dbHandle,
-			},
+			Store: repository,
 		},
 		Validator: v,
 	}
 	router.Post("/sentences", c.ServeHTTP)
+
+	fl := &handler.FetchSentenceList{
+		Service: &service.FetchSentenceList{
+			Store: repository,
+		},
+	}
+	router.Get("/sentences", fl.ServeHTTP)
 
 	return router, cleanup, nil
 }

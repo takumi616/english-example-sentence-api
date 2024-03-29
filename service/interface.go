@@ -9,3 +9,7 @@ import (
 type SentenceInserter interface {
 	InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int, error)
 }
+
+type SentenceSelecter interface {
+	SelectSentenceList(ctx context.Context) ([]entity.Sentence, error)
+}
