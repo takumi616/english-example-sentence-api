@@ -5,6 +5,7 @@ import (
 )
 
 type FetchSentenceList struct {
+	//Interface to access service package's method
 	Service SentenceFetcher
 }
 
@@ -12,7 +13,7 @@ type FetchSentenceList struct {
 func (fl *FetchSentenceList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	//Call service layer method using interface
+	//Call service package's method using interface
 	sentences, err := fl.Service.FetchSentenceList(ctx)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)

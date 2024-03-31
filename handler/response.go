@@ -8,20 +8,23 @@ import (
 )
 
 type ErrResponse struct {
-	Message string   `json:"message"`
-	Details []string `json:"details,omitempty"`
+	//Content of error message
+	Message string `json:"message"`
 }
 
+// Write http response to http response writer
 func RespondJSON(ctx context.Context, w http.ResponseWriter, body any, status int) {
-	//Set response header.
+	//Set response header
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	//Get json encoding of body.
+
+	//Get json encoding of body
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		fmt.Printf("Failed to encode response correctly: %v", err)
+		//Set error status code
 		w.WriteHeader(http.StatusInternalServerError)
 		rsp := ErrResponse{
-			Message: http.StatusText(http.StatusInternalServerError),
+			Message: err.Error(),
 		}
 		//Write error response into response writer.
 		if err := json.NewEncoder(w).Encode(rsp); err != nil {

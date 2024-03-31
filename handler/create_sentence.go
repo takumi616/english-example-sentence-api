@@ -8,11 +8,13 @@ import (
 )
 
 type CreateSentence struct {
-	Service   SentenceCreater
+	//Interface to access service package's method
+	Service SentenceCreater
+	//Http request body validator
 	Validator *validator.Validate
 }
 
-// Http handler to create a new Sentence.
+// Http handler to create a new Sentence
 func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req struct {
@@ -20,29 +22,23 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Body         string   `json:"body" validate:"required"`
 	}
 
-	//Convert json http request data into go struct type.
+	//Convert json http request data into go struct
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
-	//Validate request body.
+	//Validate http request body
 	err := validator.New().Struct(req)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusBadRequest)
+		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusBadRequest)
 		return
 	}
 
-	//Call service layer method using interface.
+	//Call service package's method using interface.
 	sentenceID, err := c.Service.CreateNewSentence(ctx, req.Vocabularies, req.Body)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
