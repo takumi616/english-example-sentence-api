@@ -7,14 +7,18 @@ import (
 )
 
 type FetchSingleSentence struct {
+	//Interface to access service package's method
 	Service SentenceFetcher
 }
 
+// Http handler to fetch a sentence by sentence id
 func (fs *FetchSingleSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	//Get a param from http request URL
 	id := chi.URLParam(r, "id")
 
+	//Call service package's method using interface
 	sentence, err := fs.Service.FetchSingleSentence(ctx, id)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
