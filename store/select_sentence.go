@@ -30,3 +30,16 @@ func (r *Repository) SelectSentenceList(ctx context.Context) ([]entity.Sentence,
 
 	return selected, nil
 }
+
+func (r *Repository) SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error) {
+	//Execute select query and scan a selected row into go struct
+	query := "SELECT * FROM sentence" + " WHERE id = $1"
+	var selected entity.Sentence
+	err := r.DbHandle.QueryRowContext(ctx, query, sentenceID).Scan(&selected.SentenceID, &selected.Body, &selected.Vocabularies, &selected.Created, &selected.Updated)
+	if err != nil {
+		log.Printf("Failed to select and scan a row into go struct: %v", err)
+		return selected, err
+	}
+
+	return selected, nil
+}

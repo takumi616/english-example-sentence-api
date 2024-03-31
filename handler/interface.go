@@ -10,6 +10,7 @@ type SentenceCreater interface {
 	CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int, error)
 }
 
-type SentenceListFetcher interface {
+type SentenceFetcher interface {
 	FetchSentenceList(ctx context.Context) ([]entity.Sentence, error)
+	FetchSingleSentence(ctx context.Context, id string) (entity.Sentence, error)
 }

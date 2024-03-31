@@ -39,14 +39,26 @@ func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func()
 		},
 		Validator: v,
 	}
-	router.Post("/sentences", c.ServeHTTP)
 
 	fl := &handler.FetchSentenceList{
-		Service: &service.FetchSentenceList{
+		Service: &service.FetchSentence{
 			Store: repository,
 		},
 	}
-	router.Get("/sentences", fl.ServeHTTP)
+
+	fs := &handler.FetchSingleSentence{
+		Service: &service.FetchSentence{
+			Store: repository,
+		},
+	}
+
+	router.Route("/sentences", func(router chi.Router) {
+		router.Post("/", c.ServeHTTP)
+		router.Get("/", fl.ServeHTTP)
+		router.Route("/{id}", func(router chi.Router) {
+			router.Get("/", fs.ServeHTTP)
+		})
+	})
 
 	return router, cleanup, nil
 }
