@@ -12,4 +12,5 @@ type SentenceInserter interface {
 
 type SentenceSelecter interface {
 	SelectSentenceList(ctx context.Context) ([]entity.Sentence, error)
+	SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error)
 }

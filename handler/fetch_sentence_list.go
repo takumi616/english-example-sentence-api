@@ -5,7 +5,7 @@ import (
 )
 
 type FetchSentenceList struct {
-	Service SentenceListFetcher
+	Service SentenceFetcher
 }
 
 // Http handler to fetch all sentences
@@ -15,9 +15,7 @@ func (fl *FetchSentenceList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Call service layer method using interface
 	sentences, err := fl.Service.FetchSentenceList(ctx)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
