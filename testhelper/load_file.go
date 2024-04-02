@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func LoadTestDataFile(t *testing.T, path string) []byte {
+func LoadJsonGoldenFile(t *testing.T, path string) []byte {
 	//Helper marks the calling function as a test helper function.
 	//When printing file and line information, this function will be skipped.
 	t.Helper()
