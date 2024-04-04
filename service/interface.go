@@ -6,6 +6,8 @@ import (
 	"github.com/takumi616/english-example-sentence-api/entity"
 )
 
+//go:generate go run github.com/matryer/moq -out moq_sentence_selecter.go . SentenceSelecter
+
 // Define interfaces to decouple each package from one another.
 // These interfaces are used to access service package's methods.
 
