@@ -19,29 +19,20 @@ func TestFetchSingleSentence(t *testing.T) {
 	}
 
 	type testCase struct {
-		sentences []entity.Sentence
-		want      wantResult
+		sentence entity.Sentence
+		want     wantResult
 	}
 
 	//Prepare two test case (ok and empty response data pattern)
 	testCases := map[string]testCase{}
 	//Case ok
 	testCases["ok"] = testCase{
-		sentences: []entity.Sentence{
-			{
-				SentenceID:   1,
-				Body:         "This is a test sentence.",
-				Vocabularies: pq.StringArray{"This", "is", "test"},
-				Created:      "2024-03-28T14:15:21.574757Z",
-				Updated:      "2024-03-28T14:15:21.574758Z",
-			},
-			{
-				SentenceID:   2,
-				Body:         "This is also test sentence.",
-				Vocabularies: pq.StringArray{"This", "is", "also"},
-				Created:      "2024-03-28T14:15:25.954024Z",
-				Updated:      "2024-03-28T14:15:25.954024Z",
-			},
+		sentence: entity.Sentence{
+			SentenceID:   1,
+			Body:         "This is a test sentence.",
+			Vocabularies: pq.StringArray{"This", "is", "test"},
+			Created:      "2024-03-28T14:15:21.574757Z",
+			Updated:      "2024-03-28T14:15:21.574758Z",
 		},
 		want: wantResult{
 			statusCode:   http.StatusOK,
@@ -50,15 +41,7 @@ func TestFetchSingleSentence(t *testing.T) {
 	}
 	//Case error
 	testCases["error"] = testCase{
-		sentences: []entity.Sentence{
-			{
-				SentenceID:   1,
-				Body:         "This is a test sentence.",
-				Vocabularies: pq.StringArray{"This", "is", "test"},
-				Created:      "2024-03-28T14:15:21.574757Z",
-				Updated:      "2024-03-28T14:15:21.574758Z",
-			},
-		},
+		sentence: entity.Sentence{},
 		want: wantResult{
 			statusCode:   http.StatusInternalServerError,
 			responseFile: "../testhelper/golden/fetchsingle/err_resp.json.golden",
@@ -85,16 +68,9 @@ func TestFetchSingleSentence(t *testing.T) {
 			moq := &SentenceFetcherMock{}
 			moq.FetchSingleSentenceFunc = func(ctx context.Context, id string) (entity.Sentence, error) {
 				if testCase.want.statusCode == http.StatusOK {
-					return testCase.sentences[1], nil
+					return testCase.sentence, nil
 				}
-				return entity.Sentence{}, errors.New("sql: no rows in result set")
-				// sentenceID, _ := strconv.Atoi(id)
-				// for _, sentence := range testCase.sentences {
-				// 	if sentence.SentenceID == sentenceID {
-				// 		return sentence, nil
-				// 	}
-				// }
-				// return entity.Sentence{}, errors.New("sql: no rows in result set")
+				return testCase.sentence, errors.New("sql: no rows in result set")
 			}
 
 			//Send http request
