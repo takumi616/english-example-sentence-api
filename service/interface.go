@@ -21,3 +21,8 @@ type SentenceSelecter interface {
 	SelectSentenceList(ctx context.Context) ([]entity.Sentence, error)
 	SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error)
 }
+
+// Delete a sentence by sentence id
+type SentenceDeleter interface {
+	DeleteSentence(ctx context.Context, sentenceID int) (int, error)
+}

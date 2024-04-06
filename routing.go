@@ -52,11 +52,17 @@ func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func()
 		},
 	}
 
+	d := &handler.DeleteSentence{
+		Service: &service.DeleteSentence{
+			Store: repository,
+		},
+	}
 	router.Route("/sentences", func(router chi.Router) {
 		router.Post("/", c.ServeHTTP)
 		router.Get("/", fl.ServeHTTP)
 		router.Route("/{id}", func(router chi.Router) {
 			router.Get("/", fs.ServeHTTP)
+			router.Delete("/", d.ServeHTTP)
 		})
 	})
 

@@ -21,3 +21,8 @@ type SentenceFetcher interface {
 	FetchSentenceList(ctx context.Context) ([]entity.Sentence, error)
 	FetchSingleSentence(ctx context.Context, id string) (entity.Sentence, error)
 }
+
+// Delete a sentence by sentence id
+type SentenceDeleter interface {
+	DeleteSentence(ctx context.Context, id string) (int, error)
+}
