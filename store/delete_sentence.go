@@ -34,5 +34,4 @@ func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int) (int, e
 	}
 
 	return deleted.SentenceID, nil
-
 }
