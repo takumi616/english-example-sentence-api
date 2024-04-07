@@ -27,3 +27,8 @@ type SentenceFetcher interface {
 type SentenceDeleter interface {
 	DeleteSentence(ctx context.Context, id string) (int, error)
 }
+
+// Update a sentence by sentence id
+type SentenceUpdater interface {
+	UpdateSentence(ctx context.Context, id string, body string) (entity.Sentence, error)
+}
