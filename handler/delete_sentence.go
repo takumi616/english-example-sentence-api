@@ -22,6 +22,7 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sentenceID, err := d.Service.DeleteSentence(ctx, id)
 	if err != nil {
 		RespondJSON(ctx, w, ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		return
 	}
 
 	//Create json response body writing deleted record's id.
