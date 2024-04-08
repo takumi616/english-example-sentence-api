@@ -8,6 +8,7 @@ import (
 
 //go:generate go run github.com/matryer/moq -out moq_sentence_selecter.go . SentenceSelecter
 //go:generate go run github.com/matryer/moq -out moq_sentence_deleter.go . SentenceDeleter
+//go:generate go run github.com/matryer/moq -out moq_sentence_updater.go . SentenceUpdater
 
 // Define interfaces to decouple each package from one another.
 // These interfaces are used to access service package's methods.
