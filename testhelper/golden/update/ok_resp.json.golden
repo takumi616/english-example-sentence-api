@@ -1,7 +1,7 @@
 {
-    "sentence_id":9,
-    "body":"Updated sentence.",
-    "vocabularies":["docker","is","used"],
+    "sentence_id":6,
+    "body":"After finishing the build process, this application is packaged into a container and ready for deployment.",
+    "vocabularies":["build", "deployment", "container"],
     "created":"2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
     "updated":"2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679"
 }
