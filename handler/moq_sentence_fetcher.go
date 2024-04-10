@@ -5,7 +5,7 @@ package handler
 
 import (
 	"context"
-	"github.com/takumi616/english-example-sentence-api/entity"
+	"github.com/takumi616/generate-example/entity"
 	"sync"
 )
 

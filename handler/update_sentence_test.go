@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/lib/pq"
-	"github.com/takumi616/english-example-sentence-api/entity"
-	"github.com/takumi616/english-example-sentence-api/testhelper"
+	"github.com/takumi616/generate-example/entity"
+	"github.com/takumi616/generate-example/testhelper"
 )
 
 func TestUpdateSentence(t *testing.T) {

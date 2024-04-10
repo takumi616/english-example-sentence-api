@@ -7,7 +7,7 @@ import (
 	"net"
 
 	_ "github.com/lib/pq"
-	"github.com/takumi616/english-example-sentence-api/config"
+	"github.com/takumi616/generate-example/config"
 )
 
 func run(ctx context.Context) error {

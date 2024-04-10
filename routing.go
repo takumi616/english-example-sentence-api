@@ -6,10 +6,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/takumi616/english-example-sentence-api/config"
-	"github.com/takumi616/english-example-sentence-api/handler"
-	"github.com/takumi616/english-example-sentence-api/service"
-	"github.com/takumi616/english-example-sentence-api/store"
+	"github.com/takumi616/generate-example/config"
+	"github.com/takumi616/generate-example/handler"
+	"github.com/takumi616/generate-example/service"
+	"github.com/takumi616/generate-example/store"
 )
 
 func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
