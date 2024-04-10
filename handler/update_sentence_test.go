@@ -14,15 +14,21 @@ import (
 )
 
 func TestUpdateSentence(t *testing.T) {
+
+	type expected struct {
+		//Expected http status code
+		statusCode int
+		//File url of expected json response body
+		responseBody string
+	}
+
 	type testData struct {
 		//Json request body
 		requestBody string
 		//Test sentence entity
 		sentence entity.Sentence
-		//Expected http status code
-		expectedStatusCode int
-		//Expected json response
-		expectedResponse string
+		//expected result
+		expected expected
 	}
 
 	//Prepare three test cases
@@ -31,28 +37,48 @@ func TestUpdateSentence(t *testing.T) {
 	testCases["ok"] = testData{
 		requestBody: "../testhelper/golden/update/ok_req.json.golden",
 		sentence: entity.Sentence{
-			SentenceID:   9,
-			Body:         "Updated sentence.",
-			Vocabularies: pq.StringArray{"docker", "is", "used"},
+			SentenceID:   6,
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
 			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
 			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
-		expectedStatusCode: http.StatusOK,
-		expectedResponse:   "../testhelper/golden/update/ok_resp.json.golden",
+		expected: expected{
+			statusCode:   http.StatusOK,
+			responseBody: "../testhelper/golden/update/ok_resp.json.golden",
+		},
 	}
+
 	//Bad request
 	testCases["badRequest"] = testData{
-		requestBody:        "../testhelper/golden/update/badreq_req.json.golden",
-		sentence:           entity.Sentence{},
-		expectedStatusCode: http.StatusBadRequest,
-		expectedResponse:   "../testhelper/golden/update/badreq_resp.json.golden",
+		requestBody: "../testhelper/golden/update/badreq_req.json.golden",
+		sentence: entity.Sentence{
+			SentenceID:   6,
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
+		expected: expected{
+			statusCode:   http.StatusBadRequest,
+			responseBody: "../testhelper/golden/update/badreq_resp.json.golden",
+		},
 	}
-	//Data not found
+
+	//Data does not exist
 	testCases["empty"] = testData{
-		requestBody:        "../testhelper/golden/update/empty_req.json.golden",
-		sentence:           entity.Sentence{},
-		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   "../testhelper/golden/update/empty_resp.json.golden",
+		requestBody: "../testhelper/golden/update/empty_req.json.golden",
+		sentence: entity.Sentence{
+			SentenceID:   5,
+			Body:         "The application communicates with the database server to retrieve and store data.",
+			Vocabularies: pq.StringArray{"application", "store", "server"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
+		expected: expected{
+			statusCode:   http.StatusInternalServerError,
+			responseBody: "../testhelper/golden/update/empty_resp.json.golden",
+		},
 	}
 
 	for name, testData := range testCases {
@@ -68,21 +94,17 @@ func TestUpdateSentence(t *testing.T) {
 
 			//Create test http request and response writer
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodPut, "/sentences/9", bytes.NewReader(testhelper.LoadJsonGoldenFile(t, testData.requestBody)))
+			r := httptest.NewRequest(http.MethodPut, "/sentences/6", bytes.NewReader(testhelper.LoadJsonGoldenFile(t, testData.requestBody)))
 
 			//SentenceUpdaterMock　mocks SentenceUpdater interface
 			//which is used to call service package method
 			moq := &SentenceUpdaterMock{}
 			moq.UpdateSentenceFunc = func(ctx context.Context, id string, body string) (entity.Sentence, error) {
-				switch testData.expectedStatusCode {
-				case http.StatusOK:
+				if testData.expected.statusCode == http.StatusOK {
+					testData.sentence.Body = body
 					return testData.sentence, nil
-				case http.StatusBadRequest:
-					return testData.sentence, errors.New("Key: 'Body' Error:Field validation for 'Body' failed on the 'required' tag")
-				case http.StatusInternalServerError:
-					return testData.sentence, errors.New("sql: no rows in result set")
-				default:
-					return testData.sentence, nil
+				} else {
+					return entity.Sentence{}, errors.New("sql: no rows in result set")
 				}
 			}
 
@@ -92,7 +114,7 @@ func TestUpdateSentence(t *testing.T) {
 
 			//Check http response body
 			resp := w.Result()
-			testhelper.CheckOutHTTPResponse(t, resp, testData.expectedStatusCode, testhelper.LoadJsonGoldenFile(t, testData.expectedResponse))
+			testhelper.CheckOutHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
 		})
 	}
 }
