@@ -7,7 +7,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/takumi616/english-example-sentence-api/config"
+	"github.com/takumi616/generate-example/config"
 )
 
 // To be able to close *sql.DB before finishing application process,

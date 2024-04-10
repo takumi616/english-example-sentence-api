@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/lib/pq"
-	"github.com/takumi616/english-example-sentence-api/entity"
+	"github.com/takumi616/generate-example/entity"
 )
 
 func TestDeleteSentence(t *testing.T) {

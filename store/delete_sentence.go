@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/takumi616/english-example-sentence-api/entity"
+	"github.com/takumi616/generate-example/entity"
 )
 
 func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int) (int, error) {

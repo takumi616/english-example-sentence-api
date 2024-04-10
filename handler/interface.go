@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/takumi616/english-example-sentence-api/entity"
+	"github.com/takumi616/generate-example/entity"
 )
 
 //go:generate go run github.com/matryer/moq -out moq_sentence_fetcher.go . SentenceFetcher
