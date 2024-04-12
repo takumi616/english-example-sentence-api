@@ -22,23 +22,30 @@ func TestDeleteSentence(t *testing.T) {
 		expectedResponse string
 	}
 
-	//Prepare two test case (ok and error)
+	//Prepare two test cases
 	testCases := map[string]testData{}
-	//Case ok
+	//OK
 	testCases["ok"] = testData{
 		sentence: entity.Sentence{
-			SentenceID:   1,
-			Body:         "This is a test sentence.",
-			Vocabularies: pq.StringArray{"This", "is", "test"},
-			Created:      "2024-03-28T14:15:21.574757Z",
-			Updated:      "2024-03-28T14:15:21.574758Z",
+			SentenceID:   6,
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
 		expectedStatusCode: http.StatusOK,
 		expectedResponse:   "../testhelper/golden/delete/ok_resp.json.golden",
 	}
-	//Case error
+
+	//Data does not exist
 	testCases["error"] = testData{
-		sentence:           entity.Sentence{},
+		sentence: entity.Sentence{
+			SentenceID:   5,
+			Body:         "The application communicates with the database server to retrieve and store data.",
+			Vocabularies: pq.StringArray{"application", "store", "server"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
 		expectedStatusCode: http.StatusInternalServerError,
 		expectedResponse:   "../testhelper/golden/delete/err_resp.json.golden",
 	}
@@ -56,7 +63,7 @@ func TestDeleteSentence(t *testing.T) {
 
 			//Create test http request and response writer
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodDelete, "/sentences/1", nil)
+			r := httptest.NewRequest(http.MethodDelete, "/sentences/6", nil)
 
 			//SentenceDeleterMock　mocks SentenceDeleter interface
 			//which is used to call service package method
