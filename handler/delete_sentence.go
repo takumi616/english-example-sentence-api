@@ -25,10 +25,11 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Create json response body writing deleted record's id.
+	//Struct of http response body
 	rsp := struct {
 		SentenceID int `json:"sentence_id"`
 	}{SentenceID: sentenceID}
 
+	//Write a response to http response writer
 	RespondJSON(ctx, w, rsp, http.StatusOK)
 }
