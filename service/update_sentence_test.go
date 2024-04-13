@@ -10,10 +10,10 @@ import (
 )
 
 func TestUpdateSentence(t *testing.T) {
-	//Prepare two test case (ok and error)
+	//Prepare two test cases
 	testCases := map[string]entity.Sentence{}
 
-	//Case ok
+	//OK
 	testCases["ok"] = entity.Sentence{
 		SentenceID:   6,
 		Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
@@ -22,7 +22,7 @@ func TestUpdateSentence(t *testing.T) {
 		Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 	}
 
-	//Case error
+	//Data does not exist
 	testCases["error"] = entity.Sentence{
 		SentenceID:   5,
 		Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
