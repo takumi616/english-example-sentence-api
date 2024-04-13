@@ -15,6 +15,7 @@ type FetchSentence struct {
 
 // Fetch all sentences
 func (f *FetchSentence) FetchSentenceList(ctx context.Context) ([]entity.Sentence, error) {
+	//Call store package's method, using interface
 	sentences, err := f.Store.SelectSentenceList(ctx)
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)

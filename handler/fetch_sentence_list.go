@@ -20,5 +20,6 @@ func (fl *FetchSentenceList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Write http response to response writer
 	RespondJSON(ctx, w, sentences, http.StatusOK)
 }

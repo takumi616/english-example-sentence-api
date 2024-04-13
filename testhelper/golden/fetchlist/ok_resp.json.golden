@@ -1,17 +1,17 @@
 [
     {
-        "sentence_id": 1,
-        "body": "This is a test sentence.",
-        "vocabularies": ["This", "is", "test"],
-        "created": "2024-03-28T14:15:21.574757Z",
-        "updated": "2024-03-28T14:15:21.574758Z"
+        "sentence_id": 5,
+        "body": "The application communicates with the database server to retrieve and store data.",
+        "vocabularies": ["application", "store", "server"],
+        "created": "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+        "updated": "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679"
     },
     {
-        "sentence_id": 2,
-        "body": "This is also test sentence.",
-        "vocabularies": ["This", "is", "also"],
-        "created": "2024-03-28T14:15:25.954024Z",
-        "updated": "2024-03-28T14:15:25.954024Z"
+        "sentence_id":6,
+        "body":"After completing the build process, the application is packaged into a container and ready for deployment.",
+        "vocabularies":["build", "deployment", "container"],
+        "created":"2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+        "updated":"2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679"
     }
-
 ]
+
