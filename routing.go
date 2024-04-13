@@ -26,13 +26,12 @@ func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func()
 
 	//Get DB handle.
 	//cleanup is used to close *sql.DB.
-	dbHandle, cleanup, err := store.ConnectToDatabase(ctx, cfg)
+	repository, cleanup, err := store.ConnectToDatabase(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
 
 	//Register http handler.
-	repository := &store.Repository{DbHandle: dbHandle}
 	c := &handler.CreateSentence{
 		Service: &service.CreateSentence{
 			Store: repository,

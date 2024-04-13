@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,11 +11,14 @@ import (
 	"github.com/takumi616/generate-example/config"
 )
 
+type Repository struct {
+	DbHandle *sql.DB
+}
+
 // To be able to close *sql.DB before finishing application process,
 // this function needs to return a function which executes *sql.DB.Close()
-func ConnectToDatabase(ctx context.Context, config *config.Config) (*sql.DB, func(), error) {
-	dataSourceName := "host=" + config.DBHost + " port=" + config.DBPort + " user=" + config.DBUser + " password=" + config.DBPassword + " dbname=" + config.DBName + " sslmode=" + config.DBSSLMODE
-	//dataSourceName := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName, config.DBSSLMODE)
+func ConnectToDatabase(ctx context.Context, config *config.Config) (*Repository, func(), error) {
+	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName, config.DBSSLMODE)
 	dbHandle, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
 		log.Printf("Failed to open postgresql: %v", err)
@@ -28,5 +32,6 @@ func ConnectToDatabase(ctx context.Context, config *config.Config) (*sql.DB, fun
 		return nil, func() { _ = dbHandle.Close() }, err
 	}
 
-	return dbHandle, func() { _ = dbHandle.Close() }, nil
+	repository := &Repository{DbHandle: dbHandle}
+	return repository, func() { _ = dbHandle.Close() }, nil
 }
