@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,52 +12,57 @@ import (
 )
 
 func TestFetchSentenceList(t *testing.T) {
-	type wantResult struct {
-		statusCode   int
-		responseFile string
+	type expected struct {
+		//Expected http status code
+		statusCode int
+		//Expected json response body
+		responseBody string
 	}
 
-	type testCase struct {
+	type testData struct {
+		//Test sentences data
 		sentences []entity.Sentence
-		want      wantResult
+		//Expected result
+		expected expected
 	}
 
-	//Prepare two test case (ok and empty response data pattern)
-	testCases := map[string]testCase{}
-	//Case ok
-	testCases["ok"] = testCase{
+	//Prepare two test cases
+	testCases := map[string]testData{}
+	//OK
+	testCases["ok"] = testData{
 		sentences: []entity.Sentence{
 			{
-				SentenceID:   1,
-				Body:         "This is a test sentence.",
-				Vocabularies: pq.StringArray{"This", "is", "test"},
-				Created:      "2024-03-28T14:15:21.574757Z",
-				Updated:      "2024-03-28T14:15:21.574758Z",
+				SentenceID:   5,
+				Body:         "The application communicates with the database server to retrieve and store data.",
+				Vocabularies: pq.StringArray{"application", "store", "server"},
+				Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+				Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 			},
 			{
-				SentenceID:   2,
-				Body:         "This is also test sentence.",
-				Vocabularies: pq.StringArray{"This", "is", "also"},
-				Created:      "2024-03-28T14:15:25.954024Z",
-				Updated:      "2024-03-28T14:15:25.954024Z",
+				SentenceID:   6,
+				Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+				Vocabularies: pq.StringArray{"build", "deployment", "container"},
+				Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+				Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 			},
 		},
-		want: wantResult{
+		expected: expected{
 			statusCode:   http.StatusOK,
-			responseFile: "../testhelper/golden/fetchlist/ok_resp.json.golden",
-		},
-	}
-	//Case empty
-	testCases["empty"] = testCase{
-		sentences: []entity.Sentence{},
-		want: wantResult{
-			statusCode:   http.StatusOK,
-			responseFile: "../testhelper/golden/fetchlist/empty_resp.json.golden",
+			responseBody: "../testhelper/golden/fetchlist/ok_resp.json.golden",
 		},
 	}
 
-	for n, testCase := range testCases {
-		testCase := testCase
+	//Empty
+	testCases["empty"] = testData{
+		sentences: []entity.Sentence{},
+		expected: expected{
+			statusCode:   http.StatusOK,
+			responseBody: "../testhelper/golden/fetchlist/empty_resp.json.golden",
+		},
+	}
+
+	for n, testData := range testCases {
+		testData := testData
 		//Execute as parallel tests
 		//Run runs function as a subtest of t called name n(first parameter of Run)
 		//It runs function in a separate goroutine and blocks
@@ -76,21 +80,16 @@ func TestFetchSentenceList(t *testing.T) {
 			//which is used to call service package method
 			moq := &SentenceFetcherMock{}
 			moq.FetchSentenceListFunc = func(ctx context.Context) ([]entity.Sentence, error) {
-				if testCase.sentences != nil {
-					return testCase.sentences, nil
-				}
-				return nil, errors.New("Found errors in mock.")
+				return testData.sentences, nil
 			}
 
 			//Send http request
 			sut := FetchSentenceList{Service: moq}
 			sut.ServeHTTP(w, r)
 
-			//Check http response body
+			//Compare http response body to expected result
 			resp := w.Result()
-			testhelper.CheckOutHTTPResponse(t,
-				resp, testCase.want.statusCode, testhelper.LoadJsonGoldenFile(t, testCase.want.responseFile),
-			)
+			testhelper.CheckOutHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
 		})
 	}
 }

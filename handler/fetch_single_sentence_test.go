@@ -13,43 +13,54 @@ import (
 )
 
 func TestFetchSingleSentence(t *testing.T) {
-	type wantResult struct {
-		statusCode   int
-		responseFile string
+	type expected struct {
+		//Expected http status code
+		statusCode int
+		//Expected json response
+		responseBody string
 	}
 
-	type testCase struct {
+	type testData struct {
+		//Test sentence data
 		sentence entity.Sentence
-		want     wantResult
+		//Expected result
+		expected expected
 	}
 
-	//Prepare two test case (ok and empty response data pattern)
-	testCases := map[string]testCase{}
-	//Case ok
-	testCases["ok"] = testCase{
+	//Prepare two test cases
+	testCases := map[string]testData{}
+	//OK
+	testCases["ok"] = testData{
 		sentence: entity.Sentence{
-			SentenceID:   1,
-			Body:         "This is a test sentence.",
-			Vocabularies: pq.StringArray{"This", "is", "test"},
-			Created:      "2024-03-28T14:15:21.574757Z",
-			Updated:      "2024-03-28T14:15:21.574758Z",
+			SentenceID:   6,
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
-		want: wantResult{
+		expected: expected{
 			statusCode:   http.StatusOK,
-			responseFile: "../testhelper/golden/fetchsingle/ok_resp.json.golden",
-		},
-	}
-	//Case error
-	testCases["error"] = testCase{
-		sentence: entity.Sentence{},
-		want: wantResult{
-			statusCode:   http.StatusInternalServerError,
-			responseFile: "../testhelper/golden/fetchsingle/err_resp.json.golden",
+			responseBody: "../testhelper/golden/fetchsingle/ok_resp.json.golden",
 		},
 	}
 
-	for n, testCase := range testCases {
-		testCase := testCase
+	//Data does not exist (sentenceID 5)
+	testCases["error"] = testData{
+		sentence: entity.Sentence{
+			SentenceID:   5,
+			Body:         "The application communicates with the database server to retrieve and store data.",
+			Vocabularies: pq.StringArray{"application", "store", "server"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
+		expected: expected{
+			statusCode:   http.StatusInternalServerError,
+			responseBody: "../testhelper/golden/fetchsingle/err_resp.json.golden",
+		},
+	}
+
+	for n, testData := range testCases {
+		testData := testData
 		//Execute as parallel tests
 		//Run runs function as a subtest of t called name n(first parameter of Run)
 		//It runs function in a separate goroutine and blocks
@@ -61,27 +72,25 @@ func TestFetchSingleSentence(t *testing.T) {
 
 			//Create test http request and response writer
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/sentences/2", nil)
+			r := httptest.NewRequest(http.MethodGet, "/sentences/6", nil)
 
 			//SentenceFetcherMock　mocks SentenceFetcher interface
 			//which is used to call service package method
 			moq := &SentenceFetcherMock{}
 			moq.FetchSingleSentenceFunc = func(ctx context.Context, id string) (entity.Sentence, error) {
-				if testCase.want.statusCode == http.StatusOK {
-					return testCase.sentence, nil
+				if testData.expected.statusCode == http.StatusOK {
+					return testData.sentence, nil
 				}
-				return testCase.sentence, errors.New("sql: no rows in result set")
+				return entity.Sentence{}, errors.New("sql: no rows in result set")
 			}
 
 			//Send http request
 			sut := FetchSingleSentence{Service: moq}
 			sut.ServeHTTP(w, r)
 
-			//Check http response body
+			//Compare http response body to expected result
 			resp := w.Result()
-			testhelper.CheckOutHTTPResponse(t,
-				resp, testCase.want.statusCode, testhelper.LoadJsonGoldenFile(t, testCase.want.responseFile),
-			)
+			testhelper.CheckOutHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
 		})
 	}
 }
