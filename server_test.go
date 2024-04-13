@@ -42,21 +42,21 @@ func TestServer_Run(t *testing.T) {
 	url := fmt.Sprintf("http://%s/%s", listener.Addr().String(), input)
 	//Check randomly selected port number.
 	t.Logf("Request URL: %q", url)
-	rsp, err := http.Get(url)
+	response, err := http.Get(url)
 	if err != nil {
 		t.Errorf("Failed to get http response: %+v", err)
 	}
 
 	//Compare response body to expected value.
-	defer rsp.Body.Close()
-	got, err := io.ReadAll(rsp.Body)
+	defer response.Body.Close()
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		t.Fatalf("Failed to read http response body: %v", err)
 	}
 
-	want := fmt.Sprintf("Test handler, %s!", input)
-	if string(got) != want {
-		t.Errorf("want value is: %q, but got: %q", want, got)
+	expectedResult := fmt.Sprintf("Test handler, %s!", input)
+	if string(responseBody) != expectedResult {
+		t.Errorf("Expected http response body is: %q, but result is: %q", expectedResult, responseBody)
 	}
 
 	//Send cancel signal to the groutine which http server is running in
