@@ -25,13 +25,15 @@ func ConnectToDatabase(ctx context.Context, config *config.Config) (*Repository,
 		return nil, func() {}, err
 	}
 
+	closeDB := func() { _ = dbHandle.Close() }
+
 	//Check if the connection to the database is still alive
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	if err := dbHandle.PingContext(ctx); err != nil {
-		return nil, func() { _ = dbHandle.Close() }, err
+		return nil, closeDB, err
 	}
 
 	repository := &Repository{DbHandle: dbHandle}
-	return repository, func() { _ = dbHandle.Close() }, nil
+	return repository, closeDB, nil
 }
