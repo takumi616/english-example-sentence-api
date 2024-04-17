@@ -20,7 +20,6 @@ func (r *Repository) UpdateSentence(ctx context.Context, sentenceID int, body st
 	query := "UPDATE sentence SET body = $2 WHERE id = $1 RETURNING *"
 	err = tx.QueryRowContext(ctx, query, sentenceID, body).Scan(&updated.SentenceID, &updated.Body, &updated.Vocabularies, &updated.Created, &updated.Updated)
 	if err != nil {
-		log.Printf(err.Error())
 		//Execute roll back
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			log.Fatalf("Failed to rollback transaction: %v", rollbackErr)
