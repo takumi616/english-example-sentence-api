@@ -17,7 +17,7 @@ func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int) (int, e
 
 	//Execute delete query and fetch a deleted record's id
 	var deleted entity.Sentence
-	query := "DELETE FROM sentence " + "WHERE id = $1 RETURNING id"
+	query := "DELETE FROM sentence WHERE id = $1 RETURNING id"
 	err = tx.QueryRowContext(ctx, query, sentenceID).Scan(&deleted.SentenceID)
 	if err != nil {
 		//Execute roll back
