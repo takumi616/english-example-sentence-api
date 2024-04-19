@@ -21,7 +21,7 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Call service package's method using interface
 	sentenceID, err := d.Service.DeleteSentence(ctx, id)
 	if err != nil {
-		RespondJSON(ctx, w, ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
@@ -31,5 +31,5 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}{SentenceID: sentenceID}
 
 	//Write a response to http response writer
-	RespondJSON(ctx, w, rsp, http.StatusOK)
+	WriteJsonResponse(ctx, w, rsp, http.StatusOK)
 }

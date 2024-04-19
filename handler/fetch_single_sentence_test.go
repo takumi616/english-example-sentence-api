@@ -90,7 +90,7 @@ func TestFetchSingleSentence(t *testing.T) {
 
 			//Compare http response body to expected result
 			resp := w.Result()
-			testhelper.CheckOutHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
+			testhelper.CompareHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
 		})
 	}
 }
