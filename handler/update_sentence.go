@@ -28,24 +28,24 @@ func (u *UpdateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//Convert json http request data into go struct
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	//Validate http request body
 	err := validator.New().Struct(req)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusBadRequest)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	//Call service package's method using interface
 	sentence, err := u.Service.UpdateSentence(ctx, id, req.Body)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	//Write a response to http response writer
-	RespondJSON(ctx, w, sentence, http.StatusOK)
+	WriteJsonResponse(ctx, w, sentence, http.StatusOK)
 }

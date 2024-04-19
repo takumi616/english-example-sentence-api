@@ -81,7 +81,7 @@ func TestDeleteSentence(t *testing.T) {
 
 			//Check http response body
 			resp := w.Result()
-			testhelper.CheckOutHTTPResponse(t, resp, testData.expectedStatusCode, testhelper.LoadJsonGoldenFile(t, testData.expectedResponse))
+			testhelper.CompareHTTPResponse(t, resp, testData.expectedStatusCode, testhelper.LoadJsonGoldenFile(t, testData.expectedResponse))
 		})
 	}
 }

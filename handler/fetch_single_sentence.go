@@ -21,10 +21,10 @@ func (fs *FetchSingleSentence) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	//Call service package's method using interface
 	sentence, err := fs.Service.FetchSingleSentence(ctx, id)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	//Write http response to response writer
-	RespondJSON(ctx, w, sentence, http.StatusOK)
+	WriteJsonResponse(ctx, w, sentence, http.StatusOK)
 }

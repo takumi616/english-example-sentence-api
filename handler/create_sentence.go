@@ -24,21 +24,21 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//Convert json http request data into go struct
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	//Validate http request body
 	err := validator.New().Struct(req)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusBadRequest)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	//Call service package's method using interface.
 	sentenceID, err := c.Service.CreateNewSentence(ctx, req.Vocabularies, req.Body)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
@@ -46,5 +46,5 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rsp := struct {
 		SentenceID int `json:"sentence_id"`
 	}{SentenceID: sentenceID}
-	RespondJSON(ctx, w, rsp, http.StatusOK)
+	WriteJsonResponse(ctx, w, rsp, http.StatusOK)
 }

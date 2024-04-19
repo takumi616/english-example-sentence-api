@@ -9,49 +9,40 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func CheckOutHTTPResponse(t *testing.T, got *http.Response, wantStatus int, wantBody []byte) {
+func CompareHTTPResponse(t *testing.T, response *http.Response, expectedStatusCode int, expectedResponseBody []byte) {
 	//Helper marks the calling function as a test helper function.
 	//When printing file and line information, this function will be skipped.
 	t.Helper()
 
 	//Read response body
-	t.Cleanup(func() { _ = got.Body.Close() })
-	gotBody, err := io.ReadAll(got.Body)
+	t.Cleanup(func() { _ = response.Body.Close() })
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	//Check http status code
-	if got.StatusCode != wantStatus {
-		t.Fatalf("wantStatus: %d,  gotStatus: %d", wantStatus, got.StatusCode)
+	//Compare http status code to expected
+	if response.StatusCode != expectedStatusCode {
+		t.Fatalf("Failed to get expected http status code. Expected:%d Result: %d", expectedStatusCode, response.StatusCode)
 	}
 
-	if len(gotBody) == 0 && len(wantBody) == 0 {
-		//Not need to call AssertJSON()
-		//Because the length of want body and got body are empty
+	if len(responseBody) == 0 && len(expectedResponseBody) == 0 {
+		//Not need to call compareResponseBody()
+		//Because the length of response bodies are empty
 		return
 	}
 
-	//Check out json http response body
-	CheckOutJSON(t, wantBody, gotBody)
-}
-
-func CheckOutJSON(t *testing.T, wantBody, gotBody []byte) {
-	//Helper marks the calling function as a test helper function.
-	//When printing file and line information, this function will be skipped.
-	t.Helper()
-
-	//Convert json data into golang's data type
-	var wantResponse, gotResponse any
-	if err := json.Unmarshal(wantBody, &wantResponse); err != nil {
-		t.Fatalf("Failed to unmarshal want %q: %v", wantBody, err)
+	//Unmarshal http response body
+	var expectedBody, resultBody any
+	if err := json.Unmarshal(expectedResponseBody, &expectedBody); err != nil {
+		t.Fatalf("Failed to unmarshal expectedResponseBody: %v", err)
 	}
-	if err := json.Unmarshal(gotBody, &gotResponse); err != nil {
-		t.Fatalf("Failed to unmarshal got %q: %v", gotBody, err)
+	if err := json.Unmarshal(responseBody, &resultBody); err != nil {
+		t.Fatalf("Failed to unmarshal responseBody: %v", err)
 	}
 
 	//Compare diff
-	if diff := cmp.Diff(gotResponse, wantResponse); diff != "" {
-		t.Errorf("Some differences are found: (-got +want)\n%s", diff)
+	if diff := cmp.Diff(resultBody, expectedBody); diff != "" {
+		t.Errorf("Some differences are found: (-expected +result)\n%s", diff)
 	}
 }
