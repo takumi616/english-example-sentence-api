@@ -12,11 +12,12 @@ type Config struct {
 	DBSSLMODE  string `env:"POSTGRES_SSLMODE"`
 }
 
-func New() (*Config, error) {
-	cfg := &Config{}
+// Read environment variables and set them to golang struct
+func GetConfig() (*Config, error) {
+	config := &Config{}
 	//Set environment variables to cfg.
-	if err := env.Parse(cfg); err != nil {
+	if err := env.Parse(config); err != nil {
 		return nil, err
 	}
-	return cfg, nil
+	return config, nil
 }
