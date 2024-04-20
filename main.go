@@ -12,7 +12,7 @@ import (
 
 func run(ctx context.Context) error {
 	//Get environment variables
-	cfg, err := config.New()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		log.Println("Failed to get config.")
 		return err
