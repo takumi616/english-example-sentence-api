@@ -42,7 +42,7 @@ func CompareHTTPResponse(t *testing.T, response *http.Response, expectedStatusCo
 	}
 
 	//Compare diff
-	if diff := cmp.Diff(resultBody, expectedBody); diff != "" {
+	if diff := cmp.Diff(expectedBody, resultBody); diff != "" {
 		t.Errorf("Some differences are found: (-expected +result)\n%s", diff)
 	}
 }

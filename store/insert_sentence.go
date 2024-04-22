@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/takumi616/generate-example/entity"
 )
@@ -19,7 +18,7 @@ func (r *Repository) InsertNewSentence(ctx context.Context, sentence *entity.Sen
 	//Execute insert query and fetch a new inserted record's ID
 	query := "INSERT INTO sentence (body, vocabularies, created, updated) VALUES($1, $2, $3, $4) RETURNING id"
 	var inserted entity.Sentence
-	err = tx.QueryRowContext(ctx, query, sentence.Body, sentence.Vocabularies, time.Now().String(), time.Now().String()).Scan(&inserted.SentenceID)
+	err = tx.QueryRowContext(ctx, query, sentence.Body, sentence.Vocabularies, sentence.Created, sentence.Updated).Scan(&inserted.SentenceID)
 	if err != nil {
 		//Roll back this transaction
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
