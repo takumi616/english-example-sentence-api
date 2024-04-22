@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/takumi616/generate-example/entity"
 )
@@ -17,6 +18,8 @@ func (c *CreateSentence) CreateNewSentence(ctx context.Context, vocabularies []s
 	sentence := &entity.Sentence{
 		Body:         body,
 		Vocabularies: vocabularies,
+		Created:      time.Now().String(),
+		Updated:      time.Now().String(),
 	}
 
 	//Call store package's method, using interface
