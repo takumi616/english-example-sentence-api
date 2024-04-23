@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestHealthEndpoint(t *testing.T) {
+func TestSetUpRouting(t *testing.T) {
 	//Set up health check endpoint
 	router := chi.NewRouter()
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
