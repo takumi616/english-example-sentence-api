@@ -31,13 +31,13 @@ func TestGetConfig(t *testing.T) {
 	t.Setenv("POSTGRES_SSLMODE", expectedConfig.DBSSLMODE)
 
 	//Call test target function
-	config, err := GetConfig()
+	actualConfig, err := GetConfig()
 	if err != nil {
 		t.Errorf("Failed to get config: %v", err)
 	}
 
 	//Compare result config to expected config
-	if diff := cmp.Diff(expectedConfig, config); diff != "" {
-		t.Errorf("Some differences are found: (-expected +result)\n%s", diff)
+	if diff := cmp.Diff(expectedConfig, actualConfig); diff != "" {
+		t.Errorf("Some differences are found: (-expected +actual)\n%s", diff)
 	}
 }

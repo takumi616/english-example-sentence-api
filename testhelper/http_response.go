@@ -16,33 +16,33 @@ func CompareHTTPResponse(t *testing.T, response *http.Response, expectedStatusCo
 
 	//Read response body
 	t.Cleanup(func() { _ = response.Body.Close() })
-	responseBody, err := io.ReadAll(response.Body)
+	actualResponseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to get http response body: %v", err)
 	}
 
 	//Compare http status code to expected
 	if response.StatusCode != expectedStatusCode {
-		t.Fatalf("Failed to get expected http status code. Expected:%d Result: %d", expectedStatusCode, response.StatusCode)
+		t.Fatalf("Failed to get expected http status code. Expected:%d Actual: %d", expectedStatusCode, response.StatusCode)
 	}
 
-	if len(responseBody) == 0 && len(expectedResponseBody) == 0 {
+	if len(actualResponseBody) == 0 && len(expectedResponseBody) == 0 {
 		//Not need to call compareResponseBody()
 		//Because the length of response bodies are empty
 		return
 	}
 
-	//Unmarshal http response body
-	var expectedBody, resultBody any
+	//Unmarshal json data into go struct
+	var expectedBody, actualBody any
 	if err := json.Unmarshal(expectedResponseBody, &expectedBody); err != nil {
-		t.Fatalf("Failed to unmarshal expectedResponseBody: %v", err)
+		t.Fatalf("Failed to unmarshal http response body: %v", err)
 	}
-	if err := json.Unmarshal(responseBody, &resultBody); err != nil {
-		t.Fatalf("Failed to unmarshal responseBody: %v", err)
+	if err := json.Unmarshal(actualResponseBody, &actualBody); err != nil {
+		t.Fatalf("Failed to unmarshal http response body: %v", err)
 	}
 
 	//Compare diff
-	if diff := cmp.Diff(expectedBody, resultBody); diff != "" {
-		t.Errorf("Some differences are found: (-expected +result)\n%s", diff)
+	if diff := cmp.Diff(expectedBody, actualBody); diff != "" {
+		t.Errorf("Some differences are found: (-expected +actual)\n%s", diff)
 	}
 }
