@@ -47,7 +47,7 @@ func TestDeleteSentence(t *testing.T) {
 			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   "../testhelper/golden/delete/err_resp.json.golden",
+		expectedResponse:   "../testhelper/golden/delete/no_rows_resp.json.golden",
 	}
 
 	for name, testData := range testCases {

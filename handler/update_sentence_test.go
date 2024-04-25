@@ -67,7 +67,7 @@ func TestUpdateSentence(t *testing.T) {
 
 	//Data does not exist
 	testCases["error"] = testData{
-		requestBody: "../testhelper/golden/update/err_req.json.golden",
+		requestBody: "../testhelper/golden/update/no_rows_req.json.golden",
 		sentence: entity.Sentence{
 			SentenceID:   5,
 			Body:         "The application communicates with the database server to retrieve and store data.",
@@ -77,7 +77,7 @@ func TestUpdateSentence(t *testing.T) {
 		},
 		expected: expected{
 			statusCode:   http.StatusInternalServerError,
-			responseBody: "../testhelper/golden/update/err_resp.json.golden",
+			responseBody: "../testhelper/golden/update/no_rows_resp.json.golden",
 		},
 	}
 

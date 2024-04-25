@@ -50,7 +50,7 @@ func TestFetchSingleSentence_handler(t *testing.T) {
 		sentence: entity.Sentence{},
 		expected: expected{
 			statusCode:   http.StatusInternalServerError,
-			responseBody: "../testhelper/golden/fetchsingle/err_resp.json.golden",
+			responseBody: "../testhelper/golden/fetchsingle/no_rows_resp.json.golden",
 		},
 	}
 
