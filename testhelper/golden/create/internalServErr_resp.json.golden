@@ -1,1 +1,1 @@
-{"message":"json: cannot unmarshal number into Go struct field .body of type string"}
+{"message":"pq: value too long for type character varying(120)"}

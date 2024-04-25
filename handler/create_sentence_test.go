@@ -7,20 +7,20 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/takumi616/generate-example/entity"
 	"github.com/takumi616/generate-example/testhelper"
 )
 
-func TestCreateNewSentence(t *testing.T) {
+func TestCreateNewSentence_handler(t *testing.T) {
 	type expected struct {
 		//Expected http status code
 		statusCode int
 		//Expected http response body
 		responseBody string
-		//Expected returned sentenceID
-		sentenceID int64
+		//Expected returned rows affected number
+		rowsAffectedNumber int64
+		//Expected error message used in error cases
+		errorMessage string
 	}
 
 	type testData struct {
@@ -33,68 +33,65 @@ func TestCreateNewSentence(t *testing.T) {
 	//Prepare test cases
 	testCases := map[string]testData{}
 
-	//Case ok
-	testCases["ok"] = testData{
+	//Ok case
+	testCases["Ok"] = testData{
 		requestBody: "../testhelper/golden/create/ok_req.json.golden",
 		expected: expected{
-			statusCode:   http.StatusOK,
-			responseBody: "../testhelper/golden/create/ok_resp.json.golden",
-			sentenceID:   6,
+			statusCode:         http.StatusOK,
+			responseBody:       "../testhelper/golden/create/ok_resp.json.golden",
+			rowsAffectedNumber: 1,
+			errorMessage:       "",
 		},
 	}
 
-	//Case http bad request
-	testCases["badreq"] = testData{
+	//Bad request case
+	testCases["Bad request"] = testData{
 		requestBody: "../testhelper/golden/create/badreq_req.json.golden",
 		expected: expected{
-			statusCode:   http.StatusBadRequest,
-			responseBody: "../testhelper/golden/create/badreq_resp.json.golden",
-			sentenceID:   0,
+			statusCode:         http.StatusBadRequest,
+			responseBody:       "../testhelper/golden/create/badreq_resp.json.golden",
+			rowsAffectedNumber: 0,
+			errorMessage:       "Key: 'Vocabularies' Error:Field validation for 'Vocabularies' failed on the 'required' tag\nKey: 'Body' Error:Field validation for 'Body' failed on the 'required' tag",
 		},
 	}
 
 	//Case http internal server error
-	testCases["internalServErr"] = testData{
+	testCases["Internal server error"] = testData{
 		requestBody: "../testhelper/golden/create/internalServErr_req.json.golden",
 		expected: expected{
-			statusCode:   http.StatusInternalServerError,
-			responseBody: "../testhelper/golden/create/internalServErr_resp.json.golden",
-			sentenceID:   0,
+			statusCode:         http.StatusInternalServerError,
+			responseBody:       "../testhelper/golden/create/internalServErr_resp.json.golden",
+			rowsAffectedNumber: 0,
+			errorMessage:       "pq: value too long for type character varying(120)",
 		},
 	}
 
-	for name, testData := range testCases {
-		testData := testData
+	for testcase, testdata := range testCases {
+		testdata := testdata
+		testcase := testcase
 
 		//Execute as subtest
-		t.Run(name, func(t *testing.T) {
+		t.Run(testcase, func(t *testing.T) {
 			//Run in parallel
 			t.Parallel()
 
 			//Prepare http request and response writer
-			r := httptest.NewRequest(http.MethodPost, "/sentences", bytes.NewReader(testhelper.LoadJsonGoldenFile(t, testData.requestBody)))
+			r := httptest.NewRequest(http.MethodPost, "/sentences", bytes.NewReader(testhelper.LoadJsonGoldenFile(t, testdata.requestBody)))
 			w := httptest.NewRecorder()
 
 			//Create service layer mock
 			moq := &SentenceCreaterMock{}
 			moq.CreateNewSentenceFunc = func(ctx context.Context, vocabularies []string, body string) (int64, error) {
-				//Case bad request and internalServErr do not include in this mock func
-				//because validator and json decoder will catch request body error
-				//before calling mock func
-
-				sentence := &entity.Sentence{
-					Body:         body,
-					Vocabularies: vocabularies,
-					Created:      time.Now().String(),
-					Updated:      time.Now().String(),
+				switch testcase {
+				//Expect request body is set to sentence entity correctly
+				case "Ok":
+					return testdata.expected.rowsAffectedNumber, nil
+				case "Internal server error":
+					return testdata.expected.rowsAffectedNumber, errors.New(testdata.expected.errorMessage)
+				//Not find test case
+				default:
+					return 0, errors.New("Failed to find test case")
 				}
-
-				//Check if fields of sentence entity are set correctly
-				if sentence.Body != "" && len(sentence.Vocabularies) != 0 && sentence.Created != "" && sentence.Updated != "" {
-					return testData.expected.sentenceID, nil
-				}
-
-				return 0, errors.New("Unexpected Error. Failed to set request body to Go struct field.")
 			}
 
 			//Send http request
@@ -103,7 +100,7 @@ func TestCreateNewSentence(t *testing.T) {
 
 			//Check http response body
 			resp := w.Result()
-			testhelper.CompareHTTPResponse(t, resp, testData.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testData.expected.responseBody))
+			testhelper.CompareHTTPResponse(t, resp, testdata.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testdata.expected.responseBody))
 		})
 	}
 }

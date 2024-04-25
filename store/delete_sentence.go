@@ -3,8 +3,6 @@ package store
 import (
 	"context"
 	"log"
-
-	"github.com/takumi616/generate-example/entity"
 )
 
 func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int64) (int64, error) {
@@ -16,7 +14,6 @@ func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int64) (int6
 	}
 
 	//Execute delete query and fetch a deleted record's id
-	var deleted entity.Sentence
 	query := "DELETE FROM sentence WHERE id = $1"
 	result, err := tx.ExecContext(ctx, query, sentenceID)
 	if err != nil {
@@ -43,5 +40,5 @@ func (r *Repository) DeleteSentence(ctx context.Context, sentenceID int64) (int6
 		log.Fatalf("Failed to commit transaction: %v", err)
 	}
 
-	return deleted.SentenceID, nil
+	return rowsAffected, nil
 }

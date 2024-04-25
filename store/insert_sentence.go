@@ -40,17 +40,10 @@ func (r *Repository) InsertNewSentence(ctx context.Context, sentence *entity.Sen
 		return 0, err
 	}
 
-	//Get newly created record Id
-	inserted, err := result.LastInsertId()
-	if err != nil {
-		log.Printf("Failed to get last inserted Id: %v", err)
-		return 0, err
-	}
-
 	//Commit transaction
 	if err := tx.Commit(); err != nil {
 		log.Printf("Failed to commit transaction: %v", err)
 	}
 
-	return inserted, nil
+	return rows, nil
 }

@@ -1,4 +1,4 @@
 {
-    "body":"After finishing the build process, this application is packaged into a container and ready for deployment.",
-    "vocabularies":["build", "deployment", "container"]
+    "vocabularies":["build", "deployment", "container"],
+    "body":"After completing the build process, the application is packaged into a container and ready for deployment."
 }
