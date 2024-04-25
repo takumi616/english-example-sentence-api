@@ -36,15 +36,15 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Call service package's method using interface.
-	sentenceID, err := c.Service.CreateNewSentence(ctx, req.Vocabularies, req.Body)
+	rowsAffected, err := c.Service.CreateNewSentence(ctx, req.Vocabularies, req.Body)
 	if err != nil {
 		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
-	//Create json response body writing newly created record's id.
+	//Write response body into response writer
 	rsp := struct {
-		SentenceID int64 `json:"sentence_id"`
-	}{SentenceID: sentenceID}
+		RowsAffectedNumber int64 `json:"rows_affected_number"`
+	}{RowsAffectedNumber: rowsAffected}
 	WriteJsonResponse(ctx, w, rsp, http.StatusOK)
 }

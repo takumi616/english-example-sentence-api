@@ -1,4 +1,4 @@
 {
-    "vocabularies":["docker", "is", "used"], 
-    "body":66566
+    "vocabularies":["network", "database", "memory"], 
+    "body":"In the realm of technology, the network serves as the backbone of communication, facilitating seamless data transfer between devices. At the heart of this exchange lies the database, a repository of structured information meticulously organized for efficient retrieval and manipulation. As data flows through the network, it finds refuge in the memory, transient yet vital, where it is temporarily stored and processed to fuel the operations of countless applications, orchestrating the dance of bytes across the digital landscape."
 }
