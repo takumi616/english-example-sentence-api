@@ -101,7 +101,7 @@ func TestSelectSentenceById(t *testing.T) {
 	repository := &Repository{DbHandle: db}
 
 	//Call test target method
-	sentenceID := 5
+	sentenceID := int64(5)
 	selected, err := repository.SelectSentenceById(context.Background(), sentenceID)
 	if err != nil {
 		t.Errorf("Failed to fetch a sentence: %v", err)

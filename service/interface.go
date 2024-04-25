@@ -16,21 +16,21 @@ import (
 
 // Insert a new sentence
 type SentenceInserter interface {
-	InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int, error)
+	InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int64, error)
 }
 
 // Select all sentences or single sentence by sentence id
 type SentenceSelecter interface {
 	SelectSentenceList(ctx context.Context) ([]entity.Sentence, error)
-	SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error)
+	SelectSentenceById(ctx context.Context, sentenceID int64) (entity.Sentence, error)
 }
 
 // Delete a sentence by sentence id
 type SentenceDeleter interface {
-	DeleteSentence(ctx context.Context, sentenceID int) (int, error)
+	DeleteSentence(ctx context.Context, sentenceID int64) (int64, error)
 }
 
 // Update a sentence by sentence id
 type SentenceUpdater interface {
-	UpdateSentence(ctx context.Context, sentenceID int, body string) (entity.Sentence, error)
+	UpdateSentence(ctx context.Context, sentenceID int64, body string) (int64, error)
 }

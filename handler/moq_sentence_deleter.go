@@ -18,7 +18,7 @@ var _ SentenceDeleter = &SentenceDeleterMock{}
 //
 //		// make and configure a mocked SentenceDeleter
 //		mockedSentenceDeleter := &SentenceDeleterMock{
-//			DeleteSentenceFunc: func(ctx context.Context, id string) (int, error) {
+//			DeleteSentenceFunc: func(ctx context.Context, id string) (int64, error) {
 //				panic("mock out the DeleteSentence method")
 //			},
 //		}
@@ -29,7 +29,7 @@ var _ SentenceDeleter = &SentenceDeleterMock{}
 //	}
 type SentenceDeleterMock struct {
 	// DeleteSentenceFunc mocks the DeleteSentence method.
-	DeleteSentenceFunc func(ctx context.Context, id string) (int, error)
+	DeleteSentenceFunc func(ctx context.Context, id string) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -45,7 +45,7 @@ type SentenceDeleterMock struct {
 }
 
 // DeleteSentence calls DeleteSentenceFunc.
-func (mock *SentenceDeleterMock) DeleteSentence(ctx context.Context, id string) (int, error) {
+func (mock *SentenceDeleterMock) DeleteSentence(ctx context.Context, id string) (int64, error) {
 	if mock.DeleteSentenceFunc == nil {
 		panic("SentenceDeleterMock.DeleteSentenceFunc: method is nil but SentenceDeleter.DeleteSentence was just called")
 	}

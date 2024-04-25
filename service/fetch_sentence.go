@@ -27,18 +27,18 @@ func (f *FetchSentence) FetchSentenceList(ctx context.Context) ([]entity.Sentenc
 
 // Fetch single sentence by sentence id
 func (f *FetchSentence) FetchSingleSentence(ctx context.Context, id string) (entity.Sentence, error) {
-	//Convert string into int
+	// Convert string into int
 	sentenceID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
 	}
 
-	//Call store package's method, using interface
-	sentence, err := f.Store.SelectSentenceById(ctx, sentenceID)
+	// Call store package's method, using interface
+	fetched, err := f.Store.SelectSentenceById(ctx, int64(sentenceID))
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
 		return entity.Sentence{}, err
 	}
 
-	return sentence, nil
+	return fetched, nil
 }

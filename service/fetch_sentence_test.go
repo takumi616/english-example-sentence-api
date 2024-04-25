@@ -102,7 +102,7 @@ func TestFetchSingleSentence(t *testing.T) {
 			//which is used to call service package method
 			ctx := context.Background()
 			moq := &SentenceSelecterMock{}
-			moq.SelectSentenceByIdFunc = func(ctx context.Context, sentenceID int) (entity.Sentence, error) {
+			moq.SelectSentenceByIdFunc = func(ctx context.Context, sentenceID int64) (entity.Sentence, error) {
 				if testSentence.SentenceID == sentenceID {
 					return testSentence, nil
 				}

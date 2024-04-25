@@ -7,7 +7,8 @@ import (
 	"github.com/takumi616/generate-example/entity"
 )
 
-func (r *Repository) InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int, error) {
+// Insert a new sentence into db
+func (r *Repository) InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int64, error) {
 	//Begin a transaction
 	tx, err := r.DbHandle.BeginTx(ctx, nil)
 	if err != nil {
@@ -16,22 +17,40 @@ func (r *Repository) InsertNewSentence(ctx context.Context, sentence *entity.Sen
 	}
 
 	//Execute insert query and fetch a new inserted record's ID
-	query := "INSERT INTO sentence (body, vocabularies, created, updated) VALUES($1, $2, $3, $4) RETURNING id"
-	var inserted entity.Sentence
-	err = tx.QueryRowContext(ctx, query, sentence.Body, sentence.Vocabularies, sentence.Created, sentence.Updated).Scan(&inserted.SentenceID)
+	query := "INSERT INTO sentence (body, vocabularies, created, updated) VALUES($1, $2, $3, $4)"
+	result, err := tx.ExecContext(ctx, query, sentence.Body, sentence.Vocabularies, sentence.Created, sentence.Updated)
 	if err != nil {
-		//Roll back this transaction
+		//Roll back transaction
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			log.Fatalf("Failed to rollback transaction: %v", rollbackErr)
+			log.Printf("Failed to rollback transaction: %v", rollbackErr)
+			return 0, err
 		}
 		log.Printf("Rolled back transaction: %v", err)
-		return inserted.SentenceID, err
+		return 0, err
+	}
+
+	//Get rows affected number
+	rows, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to get a rows affected number: %v", err)
+		return 0, err
+	}
+	if rows != 1 {
+		log.Printf("Got an unexpected rows affected number: %d", rows)
+		return 0, err
+	}
+
+	//Get newly created record Id
+	inserted, err := result.LastInsertId()
+	if err != nil {
+		log.Printf("Failed to get last inserted Id: %v", err)
+		return 0, err
 	}
 
 	//Commit transaction
 	if err := tx.Commit(); err != nil {
-		log.Fatalf("Failed to commit transaction: %v", err)
+		log.Printf("Failed to commit transaction: %v", err)
 	}
 
-	return inserted.SentenceID, nil
+	return inserted, nil
 }

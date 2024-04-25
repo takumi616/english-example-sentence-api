@@ -19,7 +19,7 @@ var _ SentenceInserter = &SentenceInserterMock{}
 //
 //		// make and configure a mocked SentenceInserter
 //		mockedSentenceInserter := &SentenceInserterMock{
-//			InsertNewSentenceFunc: func(ctx context.Context, sentence *entity.Sentence) (int, error) {
+//			InsertNewSentenceFunc: func(ctx context.Context, sentence *entity.Sentence) (int64, error) {
 //				panic("mock out the InsertNewSentence method")
 //			},
 //		}
@@ -30,7 +30,7 @@ var _ SentenceInserter = &SentenceInserterMock{}
 //	}
 type SentenceInserterMock struct {
 	// InsertNewSentenceFunc mocks the InsertNewSentence method.
-	InsertNewSentenceFunc func(ctx context.Context, sentence *entity.Sentence) (int, error)
+	InsertNewSentenceFunc func(ctx context.Context, sentence *entity.Sentence) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -46,7 +46,7 @@ type SentenceInserterMock struct {
 }
 
 // InsertNewSentence calls InsertNewSentenceFunc.
-func (mock *SentenceInserterMock) InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int, error) {
+func (mock *SentenceInserterMock) InsertNewSentence(ctx context.Context, sentence *entity.Sentence) (int64, error) {
 	if mock.InsertNewSentenceFunc == nil {
 		panic("SentenceInserterMock.InsertNewSentenceFunc: method is nil but SentenceInserter.InsertNewSentence was just called")
 	}

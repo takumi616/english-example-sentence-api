@@ -44,7 +44,7 @@ func (c *CreateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//Create json response body writing newly created record's id.
 	rsp := struct {
-		SentenceID int `json:"sentence_id"`
+		SentenceID int64 `json:"sentence_id"`
 	}{SentenceID: sentenceID}
 	WriteJsonResponse(ctx, w, rsp, http.StatusOK)
 }

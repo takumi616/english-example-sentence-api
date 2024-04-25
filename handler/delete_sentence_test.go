@@ -68,7 +68,7 @@ func TestDeleteSentence(t *testing.T) {
 			//SentenceDeleterMock　mocks SentenceDeleter interface
 			//which is used to call service package method
 			moq := &SentenceDeleterMock{}
-			moq.DeleteSentenceFunc = func(ctx context.Context, id string) (int, error) {
+			moq.DeleteSentenceFunc = func(ctx context.Context, id string) (int64, error) {
 				if testData.expectedStatusCode == http.StatusOK {
 					return testData.sentence.SentenceID, nil
 				}

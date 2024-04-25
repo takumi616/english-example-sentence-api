@@ -4,8 +4,6 @@ import (
 	"context"
 	"log"
 	"strconv"
-
-	"github.com/takumi616/generate-example/entity"
 )
 
 type UpdateSentence struct {
@@ -14,18 +12,18 @@ type UpdateSentence struct {
 }
 
 // Update a sentence by sentence id
-func (u *UpdateSentence) UpdateSentence(ctx context.Context, id string, body string) (entity.Sentence, error) {
+func (u *UpdateSentence) UpdateSentence(ctx context.Context, id string, body string) (int64, error) {
 	sentenceID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Printf("Failed to get int type sentenceID: %v", err)
-		return entity.Sentence{}, err
+		return 0, err
 	}
 
 	//Call store package's method, using interface
-	sentence, err := u.Store.UpdateSentence(ctx, sentenceID, body)
+	sentence, err := u.Store.UpdateSentence(ctx, int64(sentenceID), body)
 	if err != nil {
 		log.Printf("Failed to get updated sentence: %v", err)
-		return entity.Sentence{}, err
+		return 0, err
 	}
 
 	return sentence, nil

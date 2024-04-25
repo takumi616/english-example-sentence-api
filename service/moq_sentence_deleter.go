@@ -18,7 +18,7 @@ var _ SentenceDeleter = &SentenceDeleterMock{}
 //
 //		// make and configure a mocked SentenceDeleter
 //		mockedSentenceDeleter := &SentenceDeleterMock{
-//			DeleteSentenceFunc: func(ctx context.Context, sentenceID int) (int, error) {
+//			DeleteSentenceFunc: func(ctx context.Context, sentenceID int64) (int64, error) {
 //				panic("mock out the DeleteSentence method")
 //			},
 //		}
@@ -29,7 +29,7 @@ var _ SentenceDeleter = &SentenceDeleterMock{}
 //	}
 type SentenceDeleterMock struct {
 	// DeleteSentenceFunc mocks the DeleteSentence method.
-	DeleteSentenceFunc func(ctx context.Context, sentenceID int) (int, error)
+	DeleteSentenceFunc func(ctx context.Context, sentenceID int64) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -38,20 +38,20 @@ type SentenceDeleterMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// SentenceID is the sentenceID argument value.
-			SentenceID int
+			SentenceID int64
 		}
 	}
 	lockDeleteSentence sync.RWMutex
 }
 
 // DeleteSentence calls DeleteSentenceFunc.
-func (mock *SentenceDeleterMock) DeleteSentence(ctx context.Context, sentenceID int) (int, error) {
+func (mock *SentenceDeleterMock) DeleteSentence(ctx context.Context, sentenceID int64) (int64, error) {
 	if mock.DeleteSentenceFunc == nil {
 		panic("SentenceDeleterMock.DeleteSentenceFunc: method is nil but SentenceDeleter.DeleteSentence was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 	}{
 		Ctx:        ctx,
 		SentenceID: sentenceID,
@@ -68,11 +68,11 @@ func (mock *SentenceDeleterMock) DeleteSentence(ctx context.Context, sentenceID 
 //	len(mockedSentenceDeleter.DeleteSentenceCalls())
 func (mock *SentenceDeleterMock) DeleteSentenceCalls() []struct {
 	Ctx        context.Context
-	SentenceID int
+	SentenceID int64
 } {
 	var calls []struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 	}
 	mock.lockDeleteSentence.RLock()
 	calls = mock.calls.DeleteSentence

@@ -18,7 +18,7 @@ var _ SentenceCreater = &SentenceCreaterMock{}
 //
 //		// make and configure a mocked SentenceCreater
 //		mockedSentenceCreater := &SentenceCreaterMock{
-//			CreateNewSentenceFunc: func(ctx context.Context, vocabularies []string, body string) (int, error) {
+//			CreateNewSentenceFunc: func(ctx context.Context, vocabularies []string, body string) (int64, error) {
 //				panic("mock out the CreateNewSentence method")
 //			},
 //		}
@@ -29,7 +29,7 @@ var _ SentenceCreater = &SentenceCreaterMock{}
 //	}
 type SentenceCreaterMock struct {
 	// CreateNewSentenceFunc mocks the CreateNewSentence method.
-	CreateNewSentenceFunc func(ctx context.Context, vocabularies []string, body string) (int, error)
+	CreateNewSentenceFunc func(ctx context.Context, vocabularies []string, body string) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -47,7 +47,7 @@ type SentenceCreaterMock struct {
 }
 
 // CreateNewSentence calls CreateNewSentenceFunc.
-func (mock *SentenceCreaterMock) CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int, error) {
+func (mock *SentenceCreaterMock) CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int64, error) {
 	if mock.CreateNewSentenceFunc == nil {
 		panic("SentenceCreaterMock.CreateNewSentenceFunc: method is nil but SentenceCreater.CreateNewSentence was just called")
 	}

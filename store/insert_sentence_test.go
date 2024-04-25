@@ -10,36 +10,80 @@ import (
 )
 
 func TestInsertNewSentence(t *testing.T) {
-	//Create a new mock DB
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("Failed to create mock: %v", err)
-	}
-	defer db.Close()
-
-	testSentence := &entity.Sentence{
-		Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
-		Vocabularies: pq.StringArray{"build", "deployment", "container"},
-		Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
-		Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+	//Expected data
+	type expected struct {
+		inserted int64
 	}
 
-	expected := 6
-	rows := sqlmock.NewRows([]string{"id"})
-	rows.AddRow(6)
-	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO sentence \(body, vocabularies, created, updated\) VALUES\(\$1, \$2, \$3, \$4\) RETURNING id`).WithArgs(testSentence.Body, testSentence.Vocabularies, testSentence.Created, testSentence.Updated).WillReturnRows(rows)
-	mock.ExpectCommit()
-
-	repository := &Repository{DbHandle: db}
-	insertedID, err := repository.InsertNewSentence(context.Background(), testSentence)
-	if err != nil {
-		t.Errorf("Failed to insert new sentence: %v", err)
+	type testdata struct {
+		sentence       entity.Sentence
+		expected       expected
+		lastInsertedId int64
+		rowsAffected   int64
 	}
 
-	if insertedID == expected {
-		t.Logf("Successfully inserted new sentence and its ID is: %d", insertedID)
-	} else {
-		t.Errorf("Unexpected sentence ID. Expected: %d  Actual: %d", expected, insertedID)
+	//Prepare test cases
+	testcases := map[string]testdata{}
+
+	//Ok test case
+	testcases["OK"] = testdata{
+		sentence: entity.Sentence{
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
+		expected:       expected{inserted: 6},
+		lastInsertedId: 6,
+		rowsAffected:   1,
+	}
+
+	//Fail test case
+	testcases["Fail"] = testdata{
+		sentence: entity.Sentence{
+			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+			Vocabularies: pq.StringArray{"build", "deployment", "container"},
+			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
+			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+		},
+		expected:       expected{inserted: 0},
+		lastInsertedId: 0,
+		rowsAffected:   0,
+	}
+
+	for testcase, testdata := range testcases {
+		//Run runs function as a subtest of t called name n(first parameter of Run)
+		t.Run(testcase, func(t *testing.T) {
+			//Parallel signals that this test is to be run in parallel
+			//with (and only with) other parallel tests
+			t.Parallel()
+			//Create a new mock DB
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("Failed to create mock: %v", err)
+			}
+			defer db.Close()
+
+			//Set expected query to mock
+			mock.ExpectBegin()
+			mock.ExpectExec(`INSERT INTO sentence \(body, vocabularies, created, updated\) VALUES\(\$1, \$2, \$3, \$4\)`).
+				WithArgs(testdata.sentence.Body, testdata.sentence.Vocabularies, testdata.sentence.Created, testdata.sentence.Updated).
+				WillReturnResult(sqlmock.NewResult(testdata.lastInsertedId, testdata.rowsAffected))
+			mock.ExpectCommit()
+
+			//Call test target function using mock db
+			repository := &Repository{DbHandle: db}
+			actualInserted, err := repository.InsertNewSentence(context.Background(), &testdata.sentence)
+			if err != nil {
+				t.Errorf("Failed to insert new sentence: %v", err)
+			}
+
+			//Compare actual to expected
+			if actualInserted == testdata.expected.inserted {
+				t.Logf("Successfully inserted new sentence and its ID is: %d", actualInserted)
+			} else {
+				t.Errorf("Unexpected sentence ID. Expected: %d  Actual: %d", testdata.expected.inserted, actualInserted)
+			}
+		})
 	}
 }

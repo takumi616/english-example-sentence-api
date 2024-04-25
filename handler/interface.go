@@ -16,7 +16,7 @@ import (
 
 // Create a sentence
 type SentenceCreater interface {
-	CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int, error)
+	CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int64, error)
 }
 
 // Fetch all sentences or a specific sentence by sentence id
@@ -27,10 +27,10 @@ type SentenceFetcher interface {
 
 // Delete a sentence by sentence id
 type SentenceDeleter interface {
-	DeleteSentence(ctx context.Context, id string) (int, error)
+	DeleteSentence(ctx context.Context, id string) (int64, error)
 }
 
 // Update a sentence by sentence id
 type SentenceUpdater interface {
-	UpdateSentence(ctx context.Context, id string, body string) (entity.Sentence, error)
+	UpdateSentence(ctx context.Context, id string, body string) (int64, error)
 }
