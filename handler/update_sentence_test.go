@@ -99,12 +99,12 @@ func TestUpdateSentence(t *testing.T) {
 			//SentenceUpdaterMock　mocks SentenceUpdater interface
 			//which is used to call service package method
 			moq := &SentenceUpdaterMock{}
-			moq.UpdateSentenceFunc = func(ctx context.Context, id string, body string) (entity.Sentence, error) {
+			moq.UpdateSentenceFunc = func(ctx context.Context, id string, body string) (int64, error) {
 				if testData.expected.statusCode == http.StatusOK {
 					testData.sentence.Body = body
-					return testData.sentence, nil
+					return testData.sentence.SentenceID, nil
 				} else {
-					return entity.Sentence{}, errors.New("sql: no rows in result set")
+					return 0, errors.New("sql: no rows in result set")
 				}
 			}
 

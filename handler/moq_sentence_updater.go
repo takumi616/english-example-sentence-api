@@ -5,7 +5,6 @@ package handler
 
 import (
 	"context"
-	"github.com/takumi616/generate-example/entity"
 	"sync"
 )
 
@@ -19,7 +18,7 @@ var _ SentenceUpdater = &SentenceUpdaterMock{}
 //
 //		// make and configure a mocked SentenceUpdater
 //		mockedSentenceUpdater := &SentenceUpdaterMock{
-//			UpdateSentenceFunc: func(ctx context.Context, id string, body string) (entity.Sentence, error) {
+//			UpdateSentenceFunc: func(ctx context.Context, id string, body string) (int64, error) {
 //				panic("mock out the UpdateSentence method")
 //			},
 //		}
@@ -30,7 +29,7 @@ var _ SentenceUpdater = &SentenceUpdaterMock{}
 //	}
 type SentenceUpdaterMock struct {
 	// UpdateSentenceFunc mocks the UpdateSentence method.
-	UpdateSentenceFunc func(ctx context.Context, id string, body string) (entity.Sentence, error)
+	UpdateSentenceFunc func(ctx context.Context, id string, body string) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -48,7 +47,7 @@ type SentenceUpdaterMock struct {
 }
 
 // UpdateSentence calls UpdateSentenceFunc.
-func (mock *SentenceUpdaterMock) UpdateSentence(ctx context.Context, id string, body string) (entity.Sentence, error) {
+func (mock *SentenceUpdaterMock) UpdateSentence(ctx context.Context, id string, body string) (int64, error) {
 	if mock.UpdateSentenceFunc == nil {
 		panic("SentenceUpdaterMock.UpdateSentenceFunc: method is nil but SentenceUpdater.UpdateSentence was just called")
 	}

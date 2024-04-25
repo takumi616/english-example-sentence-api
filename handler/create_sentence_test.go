@@ -20,7 +20,7 @@ func TestCreateNewSentence(t *testing.T) {
 		//Expected http response body
 		responseBody string
 		//Expected returned sentenceID
-		sentenceID int
+		sentenceID int64
 	}
 
 	type testData struct {
@@ -77,7 +77,7 @@ func TestCreateNewSentence(t *testing.T) {
 
 			//Create service layer mock
 			moq := &SentenceCreaterMock{}
-			moq.CreateNewSentenceFunc = func(ctx context.Context, vocabularies []string, body string) (int, error) {
+			moq.CreateNewSentenceFunc = func(ctx context.Context, vocabularies []string, body string) (int64, error) {
 				//Case bad request and internalServErr do not include in this mock func
 				//because validator and json decoder will catch request body error
 				//before calling mock func

@@ -47,12 +47,12 @@ func TestUpdateSentence(t *testing.T) {
 			//which is used to call service package method
 			ctx := context.Background()
 			moq := &SentenceUpdaterMock{}
-			moq.UpdateSentenceFunc = func(ctx context.Context, sentenceID int, body string) (entity.Sentence, error) {
+			moq.UpdateSentenceFunc = func(ctx context.Context, sentenceID int64, body string) (int64, error) {
 				if testSentence.SentenceID == sentenceID {
 					testSentence.Body = body
-					return testSentence, nil
+					return testSentence.SentenceID, nil
 				}
-				return entity.Sentence{}, errors.New("sql: no rows in result set")
+				return 0, errors.New("sql: no rows in result set")
 			}
 
 			//Call test target method using mock interface
@@ -64,7 +64,7 @@ func TestUpdateSentence(t *testing.T) {
 			}
 
 			if name == "ok" {
-				t.Logf("Updated sentence body: %s", updatedSentence.Body)
+				t.Logf("Successfully updated a sentence: %d", updatedSentence)
 			} else {
 				//Test case "error"
 				t.Logf("Failed to update: %v", err)

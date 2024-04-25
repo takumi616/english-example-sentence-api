@@ -27,7 +27,7 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//Struct of http response body
 	rsp := struct {
-		SentenceID int `json:"sentence_id"`
+		SentenceID int64 `json:"sentence_id"`
 	}{SentenceID: sentenceID}
 
 	//Write a response to http response writer

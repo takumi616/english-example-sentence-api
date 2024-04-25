@@ -14,7 +14,7 @@ type CreateSentence struct {
 }
 
 // Create a sentence
-func (c *CreateSentence) CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int, error) {
+func (c *CreateSentence) CreateNewSentence(ctx context.Context, vocabularies []string, body string) (int64, error) {
 	sentence := &entity.Sentence{
 		Body:         body,
 		Vocabularies: vocabularies,

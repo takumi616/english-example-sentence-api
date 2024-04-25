@@ -16,13 +16,13 @@ func TestDeleteSentence(t *testing.T) {
 	defer db.Close()
 
 	//Prepare returned sentenceID
-	sentenceID := 6
+	var sentenceID int64 = 6
 	rows := mock.NewRows([]string{"id"})
 	rows.AddRow(sentenceID)
 
 	//Set query to mock DB
 	mock.ExpectBegin()
-	mock.ExpectQuery(`DELETE FROM sentence WHERE id \= \$1 RETURNING id`).WithArgs(sentenceID).WillReturnRows(rows)
+	mock.ExpectExec(`DELETE FROM sentence WHERE id \= \$1`).WithArgs(sentenceID).WillReturnResult(sqlmock.NewResult(6, 1))
 	mock.ExpectCommit()
 
 	//Call test target method

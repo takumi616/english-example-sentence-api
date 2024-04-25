@@ -47,7 +47,7 @@ func TestDeleteSentence(t *testing.T) {
 			//which is used to call service package method
 			ctx := context.Background()
 			moq := &SentenceDeleterMock{}
-			moq.DeleteSentenceFunc = func(ctx context.Context, sentenceID int) (int, error) {
+			moq.DeleteSentenceFunc = func(ctx context.Context, sentenceID int64) (int64, error) {
 				if sentenceID == testSentence.SentenceID {
 					return sentenceID, nil
 				}

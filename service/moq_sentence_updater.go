@@ -5,7 +5,6 @@ package service
 
 import (
 	"context"
-	"github.com/takumi616/generate-example/entity"
 	"sync"
 )
 
@@ -19,7 +18,7 @@ var _ SentenceUpdater = &SentenceUpdaterMock{}
 //
 //		// make and configure a mocked SentenceUpdater
 //		mockedSentenceUpdater := &SentenceUpdaterMock{
-//			UpdateSentenceFunc: func(ctx context.Context, sentenceID int, body string) (entity.Sentence, error) {
+//			UpdateSentenceFunc: func(ctx context.Context, sentenceID int64, body string) (int64, error) {
 //				panic("mock out the UpdateSentence method")
 //			},
 //		}
@@ -30,7 +29,7 @@ var _ SentenceUpdater = &SentenceUpdaterMock{}
 //	}
 type SentenceUpdaterMock struct {
 	// UpdateSentenceFunc mocks the UpdateSentence method.
-	UpdateSentenceFunc func(ctx context.Context, sentenceID int, body string) (entity.Sentence, error)
+	UpdateSentenceFunc func(ctx context.Context, sentenceID int64, body string) (int64, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -39,7 +38,7 @@ type SentenceUpdaterMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// SentenceID is the sentenceID argument value.
-			SentenceID int
+			SentenceID int64
 			// Body is the body argument value.
 			Body string
 		}
@@ -48,13 +47,13 @@ type SentenceUpdaterMock struct {
 }
 
 // UpdateSentence calls UpdateSentenceFunc.
-func (mock *SentenceUpdaterMock) UpdateSentence(ctx context.Context, sentenceID int, body string) (entity.Sentence, error) {
+func (mock *SentenceUpdaterMock) UpdateSentence(ctx context.Context, sentenceID int64, body string) (int64, error) {
 	if mock.UpdateSentenceFunc == nil {
 		panic("SentenceUpdaterMock.UpdateSentenceFunc: method is nil but SentenceUpdater.UpdateSentence was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 		Body       string
 	}{
 		Ctx:        ctx,
@@ -73,12 +72,12 @@ func (mock *SentenceUpdaterMock) UpdateSentence(ctx context.Context, sentenceID 
 //	len(mockedSentenceUpdater.UpdateSentenceCalls())
 func (mock *SentenceUpdaterMock) UpdateSentenceCalls() []struct {
 	Ctx        context.Context
-	SentenceID int
+	SentenceID int64
 	Body       string
 } {
 	var calls []struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 		Body       string
 	}
 	mock.lockUpdateSentence.RLock()

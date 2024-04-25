@@ -31,7 +31,7 @@ func (r *Repository) SelectSentenceList(ctx context.Context) ([]entity.Sentence,
 	return selected, nil
 }
 
-func (r *Repository) SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error) {
+func (r *Repository) SelectSentenceById(ctx context.Context, sentenceID int64) (entity.Sentence, error) {
 	//Execute select query and scan a selected row into go struct
 	query := "SELECT * FROM sentence WHERE id = $1"
 	var selected entity.Sentence

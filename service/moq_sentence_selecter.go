@@ -19,7 +19,7 @@ var _ SentenceSelecter = &SentenceSelecterMock{}
 //
 //		// make and configure a mocked SentenceSelecter
 //		mockedSentenceSelecter := &SentenceSelecterMock{
-//			SelectSentenceByIdFunc: func(ctx context.Context, sentenceID int) (entity.Sentence, error) {
+//			SelectSentenceByIdFunc: func(ctx context.Context, sentenceID int64) (entity.Sentence, error) {
 //				panic("mock out the SelectSentenceById method")
 //			},
 //			SelectSentenceListFunc: func(ctx context.Context) ([]entity.Sentence, error) {
@@ -33,7 +33,7 @@ var _ SentenceSelecter = &SentenceSelecterMock{}
 //	}
 type SentenceSelecterMock struct {
 	// SelectSentenceByIdFunc mocks the SelectSentenceById method.
-	SelectSentenceByIdFunc func(ctx context.Context, sentenceID int) (entity.Sentence, error)
+	SelectSentenceByIdFunc func(ctx context.Context, sentenceID int64) (entity.Sentence, error)
 
 	// SelectSentenceListFunc mocks the SelectSentenceList method.
 	SelectSentenceListFunc func(ctx context.Context) ([]entity.Sentence, error)
@@ -45,7 +45,7 @@ type SentenceSelecterMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// SentenceID is the sentenceID argument value.
-			SentenceID int
+			SentenceID int64
 		}
 		// SelectSentenceList holds details about calls to the SelectSentenceList method.
 		SelectSentenceList []struct {
@@ -58,13 +58,13 @@ type SentenceSelecterMock struct {
 }
 
 // SelectSentenceById calls SelectSentenceByIdFunc.
-func (mock *SentenceSelecterMock) SelectSentenceById(ctx context.Context, sentenceID int) (entity.Sentence, error) {
+func (mock *SentenceSelecterMock) SelectSentenceById(ctx context.Context, sentenceID int64) (entity.Sentence, error) {
 	if mock.SelectSentenceByIdFunc == nil {
 		panic("SentenceSelecterMock.SelectSentenceByIdFunc: method is nil but SentenceSelecter.SelectSentenceById was just called")
 	}
 	callInfo := struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 	}{
 		Ctx:        ctx,
 		SentenceID: sentenceID,
@@ -81,11 +81,11 @@ func (mock *SentenceSelecterMock) SelectSentenceById(ctx context.Context, senten
 //	len(mockedSentenceSelecter.SelectSentenceByIdCalls())
 func (mock *SentenceSelecterMock) SelectSentenceByIdCalls() []struct {
 	Ctx        context.Context
-	SentenceID int
+	SentenceID int64
 } {
 	var calls []struct {
 		Ctx        context.Context
-		SentenceID int
+		SentenceID int64
 	}
 	mock.lockSelectSentenceById.RLock()
 	calls = mock.calls.SelectSentenceById

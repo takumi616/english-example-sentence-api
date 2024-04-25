@@ -17,7 +17,7 @@ func TestCreateNewSentence(t *testing.T) {
 
 	type testData struct {
 		//Expected returned value
-		expectedSentenceID int
+		expectedSentenceID int64
 		//Test request body
 		requestBody requestBody
 	}
@@ -45,7 +45,7 @@ func TestCreateNewSentence(t *testing.T) {
 			//Create mock and set mock function
 			ctx := context.Background()
 			moq := &SentenceInserterMock{}
-			moq.InsertNewSentenceFunc = func(ctx context.Context, sentence *entity.Sentence) (int, error) {
+			moq.InsertNewSentenceFunc = func(ctx context.Context, sentence *entity.Sentence) (int64, error) {
 				return testData.expectedSentenceID, nil
 			}
 

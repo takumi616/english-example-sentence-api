@@ -12,7 +12,7 @@ type DeleteSentence struct {
 }
 
 // Delete a sentence by sentence id
-func (d *DeleteSentence) DeleteSentence(ctx context.Context, id string) (int, error) {
+func (d *DeleteSentence) DeleteSentence(ctx context.Context, id string) (int64, error) {
 	sentenceID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
@@ -20,11 +20,11 @@ func (d *DeleteSentence) DeleteSentence(ctx context.Context, id string) (int, er
 	}
 
 	//Call store package's method, using interface
-	sentenceID, err = d.Store.DeleteSentence(ctx, sentenceID)
+	deleted, err := d.Store.DeleteSentence(ctx, int64(sentenceID))
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
 		return 0, err
 	}
 
-	return sentenceID, nil
+	return deleted, nil
 }
