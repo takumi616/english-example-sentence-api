@@ -19,7 +19,7 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	//Call service package's method using interface
-	sentenceID, err := d.Service.DeleteSentence(ctx, id)
+	rowsAffected, err := d.Service.DeleteSentence(ctx, id)
 	if err != nil {
 		WriteJsonResponse(ctx, w, ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
@@ -27,8 +27,8 @@ func (d *DeleteSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//Struct of http response body
 	rsp := struct {
-		SentenceID int64 `json:"sentence_id"`
-	}{SentenceID: sentenceID}
+		RowsAffectedNumber int64 `json:"rows_affected_number"`
+	}{RowsAffectedNumber: rowsAffected}
 
 	//Write a response to http response writer
 	WriteJsonResponse(ctx, w, rsp, http.StatusOK)

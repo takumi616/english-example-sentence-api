@@ -7,72 +7,70 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lib/pq"
-	"github.com/takumi616/generate-example/entity"
 	"github.com/takumi616/generate-example/testhelper"
 )
 
-func TestDeleteSentence(t *testing.T) {
-	type testData struct {
-		//Test sentence entity
-		sentence entity.Sentence
-		//Expected http status code
-		expectedStatusCode int
-		//Expected json response data
-		expectedResponse string
+func TestDeleteSentence_handler(t *testing.T) {
+	type expected struct {
+		//Expected status code
+		statusCode int
+		//Expected http response body
+		response string
 	}
 
-	//Prepare two test cases
-	testCases := map[string]testData{}
-	//OK
-	testCases["ok"] = testData{
-		sentence: entity.Sentence{
-			SentenceID:   6,
-			Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
-			Vocabularies: pq.StringArray{"build", "deployment", "container"},
-			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
-			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+	type testdata struct {
+		//Returned rows affected number
+		rowsAffectedNumber int64
+		//Returned error message
+		errorMessage error
+		//Expected data
+		expected expected
+	}
+
+	//Prepare test cases
+	testCases := map[string]testdata{}
+	//Test case Ok
+	testCases["Ok"] = testdata{
+		rowsAffectedNumber: 1,
+		errorMessage:       nil,
+		expected: expected{
+			statusCode: http.StatusOK,
+			response:   "../testhelper/golden/delete/ok_resp.json.golden",
 		},
-		expectedStatusCode: http.StatusOK,
-		expectedResponse:   "../testhelper/golden/delete/ok_resp.json.golden",
 	}
 
-	//Data does not exist
-	testCases["error"] = testData{
-		sentence: entity.Sentence{
-			SentenceID:   5,
-			Body:         "The application communicates with the database server to retrieve and store data.",
-			Vocabularies: pq.StringArray{"application", "store", "server"},
-			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
-			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+	//Test case Internal server error
+	//Not exist a sentence specified by given sentenceID
+	testCases["No rows"] = testdata{
+		rowsAffectedNumber: 0,
+		errorMessage:       errors.New("sql: no rows in result set"),
+		expected: expected{
+			statusCode: http.StatusInternalServerError,
+			response:   "../testhelper/golden/delete/no_rows_resp.json.golden",
 		},
-		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   "../testhelper/golden/delete/no_rows_resp.json.golden",
 	}
 
-	for name, testData := range testCases {
-		testData := testData
+	for testcase, testdata := range testCases {
+		testdata := testdata
+		testcase := testcase
 		//Execute as parallel tests
 		//Run runs function as a subtest of t called name n(first parameter of Run)
 		//It runs function in a separate goroutine and blocks
 		//until this function returns or calls t.Parallel to become a parallel test
-		t.Run(name, func(t *testing.T) {
+		t.Run(testcase, func(t *testing.T) {
 			//Parallel signals that this test is to be run in parallel
 			//with (and only with) other parallel tests
 			t.Parallel()
 
 			//Create test http request and response writer
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodDelete, "/sentences/6", nil)
+			r := httptest.NewRequest(http.MethodDelete, "/sentences/1", nil)
 
 			//SentenceDeleterMock　mocks SentenceDeleter interface
 			//which is used to call service package method
 			moq := &SentenceDeleterMock{}
 			moq.DeleteSentenceFunc = func(ctx context.Context, id string) (int64, error) {
-				if testData.expectedStatusCode == http.StatusOK {
-					return testData.sentence.SentenceID, nil
-				}
-				return 0, errors.New("sql: no rows in result set")
+				return testdata.rowsAffectedNumber, testdata.errorMessage
 			}
 
 			//Send http request
@@ -81,7 +79,7 @@ func TestDeleteSentence(t *testing.T) {
 
 			//Check http response body
 			resp := w.Result()
-			testhelper.CompareHTTPResponse(t, resp, testData.expectedStatusCode, testhelper.LoadJsonGoldenFile(t, testData.expectedResponse))
+			testhelper.CompareHTTPResponse(t, resp, testdata.expected.statusCode, testhelper.LoadJsonGoldenFile(t, testdata.expected.response))
 		})
 	}
 }
