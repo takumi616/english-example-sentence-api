@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/lib/pq"
-	"github.com/takumi616/generate-example/entity"
-	"github.com/takumi616/generate-example/testhelper"
+	"github.com/takumi616/go-postgres-docker-restapi/entity"
+	"github.com/takumi616/go-postgres-docker-restapi/testhelper"
 )
 
 func TestFetchSentenceList_handler(t *testing.T) {

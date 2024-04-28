@@ -7,7 +7,7 @@ import (
 	"net"
 
 	_ "github.com/lib/pq"
-	"github.com/takumi616/generate-example/config"
+	"github.com/takumi616/go-postgres-docker-restapi/config"
 )
 
 func run(ctx context.Context) error {

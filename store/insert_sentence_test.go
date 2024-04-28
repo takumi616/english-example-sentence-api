@@ -6,13 +6,13 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/lib/pq"
-	"github.com/takumi616/generate-example/entity"
+	"github.com/takumi616/go-postgres-docker-restapi/entity"
 )
 
 func TestInsertNewSentence(t *testing.T) {
 	//Expected data
 	type expected struct {
-		inserted int64
+		rowsAffected int64
 	}
 
 	type testdata struct {
@@ -33,8 +33,8 @@ func TestInsertNewSentence(t *testing.T) {
 			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
 			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
-		expected:       expected{inserted: 6},
-		lastInsertedId: 6,
+		expected:       expected{rowsAffected: 1},
+		lastInsertedId: 1,
 		rowsAffected:   1,
 	}
 
@@ -46,7 +46,7 @@ func TestInsertNewSentence(t *testing.T) {
 			Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
 			Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
 		},
-		expected:       expected{inserted: 0},
+		expected:       expected{rowsAffected: 0},
 		lastInsertedId: 0,
 		rowsAffected:   0,
 	}
@@ -79,10 +79,10 @@ func TestInsertNewSentence(t *testing.T) {
 			}
 
 			//Compare actual to expected
-			if actualInserted == testdata.expected.inserted {
+			if actualInserted == testdata.expected.rowsAffected {
 				t.Logf("Successfully inserted new sentence and its ID is: %d", actualInserted)
 			} else {
-				t.Errorf("Unexpected sentence ID. Expected: %d  Actual: %d", testdata.expected.inserted, actualInserted)
+				t.Errorf("Unexpected sentence ID. Expected: %d  Actual: %d", testdata.expected.rowsAffected, actualInserted)
 			}
 		})
 	}

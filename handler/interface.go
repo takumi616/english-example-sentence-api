@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/takumi616/generate-example/entity"
+	"github.com/takumi616/go-postgres-docker-restapi/entity"
 )
 
 //go:generate go run github.com/matryer/moq -out moq_sentence_fetcher.go . SentenceFetcher

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/takumi616/generate-example/config"
+	"github.com/takumi616/go-postgres-docker-restapi/config"
 )
 
 type Repository struct {

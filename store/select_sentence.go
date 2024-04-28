@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/takumi616/generate-example/entity"
+	"github.com/takumi616/go-postgres-docker-restapi/entity"
 )
 
 func (r *Repository) SelectSentenceList(ctx context.Context) ([]entity.Sentence, error) {
