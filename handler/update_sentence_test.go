@@ -12,7 +12,6 @@ import (
 )
 
 func TestUpdateSentence_handler(t *testing.T) {
-
 	type expected struct {
 		//Expected http status code
 		statusCode int

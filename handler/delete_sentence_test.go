@@ -11,7 +11,6 @@ import (
 )
 
 func TestDeleteSentence_handler(t *testing.T) {
-
 	type expected struct {
 		//Expected status code
 		statusCode int
