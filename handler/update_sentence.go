@@ -40,12 +40,16 @@ func (u *UpdateSentence) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Call service package's method using interface
-	sentence, err := u.Service.UpdateSentence(ctx, id, req.Body)
+	rowsAffected, err := u.Service.UpdateSentence(ctx, id, req.Body)
 	if err != nil {
 		WriteJsonResponse(ctx, w, &ErrorResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
+	rsp := struct {
+		RowsAffectedNumber int64 `json:"rows_affected_number"`
+	}{RowsAffectedNumber: rowsAffected}
+
 	//Write a response to http response writer
-	WriteJsonResponse(ctx, w, sentence, http.StatusOK)
+	WriteJsonResponse(ctx, w, rsp, http.StatusOK)
 }

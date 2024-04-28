@@ -15,54 +15,53 @@ func TestCreateNewSentence_handler(t *testing.T) {
 	type expected struct {
 		//Expected http status code
 		statusCode int
-		//Expected http response body
+		//File url of expected json response body
 		responseBody string
-		//Expected returned rows affected number
-		rowsAffectedNumber int64
-		//Expected error message used in error cases
-		errorMessage string
 	}
 
-	type testData struct {
+	type testdata struct {
 		//Http request body
 		requestBody string
-		//Expected data
+		//Returned rows affected number
+		rowsAffectedNumber int64
+		//Returned error message
+		errorMessage error
+		//expected result
 		expected expected
 	}
 
 	//Prepare test cases
-	testCases := map[string]testData{}
+	testCases := map[string]testdata{}
 
-	//Ok case
-	testCases["Ok"] = testData{
-		requestBody: "../testhelper/golden/create/ok_req.json.golden",
+	testCases["Ok"] = testdata{
+		requestBody:        "../testhelper/golden/create/ok_req.json.golden",
+		rowsAffectedNumber: 1,
+		errorMessage:       nil,
 		expected: expected{
-			statusCode:         http.StatusOK,
-			responseBody:       "../testhelper/golden/create/ok_resp.json.golden",
-			rowsAffectedNumber: 1,
-			errorMessage:       "",
+			statusCode:   http.StatusOK,
+			responseBody: "../testhelper/golden/create/ok_resp.json.golden",
 		},
 	}
 
 	//Bad request case
-	testCases["Bad request"] = testData{
-		requestBody: "../testhelper/golden/create/badreq_req.json.golden",
+	testCases["Bad request"] = testdata{
+		requestBody:        "../testhelper/golden/create/badreq_req.json.golden",
+		rowsAffectedNumber: 0,
+		errorMessage:       errors.New("Key: 'Vocabularies' Error:Field validation for 'Vocabularies' failed on the 'required' tag\nKey: 'Body' Error:Field validation for 'Body' failed on the 'required' tag"),
 		expected: expected{
-			statusCode:         http.StatusBadRequest,
-			responseBody:       "../testhelper/golden/create/badreq_resp.json.golden",
-			rowsAffectedNumber: 0,
-			errorMessage:       "Key: 'Vocabularies' Error:Field validation for 'Vocabularies' failed on the 'required' tag\nKey: 'Body' Error:Field validation for 'Body' failed on the 'required' tag",
+			statusCode:   http.StatusBadRequest,
+			responseBody: "../testhelper/golden/create/badreq_resp.json.golden",
 		},
 	}
 
 	//Case http internal server error
-	testCases["Internal server error"] = testData{
-		requestBody: "../testhelper/golden/create/internalServErr_req.json.golden",
+	testCases["Internal server error"] = testdata{
+		requestBody:        "../testhelper/golden/create/internalServErr_req.json.golden",
+		rowsAffectedNumber: 0,
+		errorMessage:       errors.New("pq: value too long for type character varying(120)"),
 		expected: expected{
-			statusCode:         http.StatusInternalServerError,
-			responseBody:       "../testhelper/golden/create/internalServErr_resp.json.golden",
-			rowsAffectedNumber: 0,
-			errorMessage:       "pq: value too long for type character varying(120)",
+			statusCode:   http.StatusInternalServerError,
+			responseBody: "../testhelper/golden/create/internalServErr_resp.json.golden",
 		},
 	}
 
@@ -82,16 +81,7 @@ func TestCreateNewSentence_handler(t *testing.T) {
 			//Create service layer mock
 			moq := &SentenceCreaterMock{}
 			moq.CreateNewSentenceFunc = func(ctx context.Context, vocabularies []string, body string) (int64, error) {
-				switch testcase {
-				//Expect request body is set to sentence entity correctly
-				case "Ok":
-					return testdata.expected.rowsAffectedNumber, nil
-				case "Internal server error":
-					return testdata.expected.rowsAffectedNumber, errors.New(testdata.expected.errorMessage)
-				//Not find test case
-				default:
-					return 0, errors.New("Failed to find test case")
-				}
+				return testdata.rowsAffectedNumber, testdata.errorMessage
 			}
 
 			//Send http request

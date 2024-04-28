@@ -23,11 +23,13 @@ func TestFetchSingleSentence_handler(t *testing.T) {
 	type testData struct {
 		//Test sentence data
 		sentence entity.Sentence
+		//Returned error message
+		errorMessage error
 		//Expected result
 		expected expected
 	}
 
-	//Prepare two test cases
+	//Prepare test cases
 	testCases := map[string]testData{}
 	//OK test case
 	testCases["Ok"] = testData{
@@ -38,6 +40,7 @@ func TestFetchSingleSentence_handler(t *testing.T) {
 			Created:      "2024-04-25 05:25:21.177099049 +0000 UTC m=+161.586254951",
 			Updated:      "2024-04-25 05:25:21.177125382 +0000 UTC m=+161.586281242",
 		},
+		errorMessage: nil,
 		expected: expected{
 			statusCode:   http.StatusOK,
 			responseBody: "../testhelper/golden/fetchsingle/ok_resp.json.golden",
@@ -47,7 +50,8 @@ func TestFetchSingleSentence_handler(t *testing.T) {
 	//Internal server error test case
 	//Not exist a sentence specified by given sentenceID
 	testCases["No rows"] = testData{
-		sentence: entity.Sentence{},
+		sentence:     entity.Sentence{},
+		errorMessage: errors.New("sql: no rows in result set"),
 		expected: expected{
 			statusCode:   http.StatusInternalServerError,
 			responseBody: "../testhelper/golden/fetchsingle/no_rows_resp.json.golden",
@@ -74,10 +78,7 @@ func TestFetchSingleSentence_handler(t *testing.T) {
 			//which is used to call service package method
 			moq := &SentenceFetcherMock{}
 			moq.FetchSingleSentenceFunc = func(ctx context.Context, id string) (entity.Sentence, error) {
-				if testcase == "Ok" {
-					return testdata.sentence, nil
-				}
-				return testdata.sentence, errors.New("sql: no rows in result set")
+				return testdata.sentence, testdata.errorMessage
 			}
 
 			//Send http request
