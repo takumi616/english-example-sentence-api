@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/takumi616/generate-example/testhelper"
+	"github.com/takumi616/go-postgres-docker-restapi/testhelper"
 )
 
 func TestCreateNewSentence_handler(t *testing.T) {

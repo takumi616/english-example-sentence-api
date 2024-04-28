@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/lib/pq"
-	"github.com/takumi616/generate-example/entity"
+	"github.com/takumi616/go-postgres-docker-restapi/entity"
 )
 
 func TestDeleteSentence(t *testing.T) {

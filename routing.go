@@ -6,10 +6,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/takumi616/generate-example/config"
-	"github.com/takumi616/generate-example/handler"
-	"github.com/takumi616/generate-example/service"
-	"github.com/takumi616/generate-example/store"
+	"github.com/takumi616/go-postgres-docker-restapi/config"
+	"github.com/takumi616/go-postgres-docker-restapi/handler"
+	"github.com/takumi616/go-postgres-docker-restapi/service"
+	"github.com/takumi616/go-postgres-docker-restapi/store"
 )
 
 func setUpRouting(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
