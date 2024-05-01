@@ -23,10 +23,11 @@ func (c *CreateSentence) CreateNewSentence(ctx context.Context, vocabularies []s
 	}
 
 	//Call store package's method, using interface
-	sentenceID, err := c.Store.InsertNewSentence(ctx, sentence)
+	rowsAffectedNumber, err := c.Store.InsertNewSentence(ctx, sentence)
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
+		return rowsAffectedNumber, err
 	}
 
-	return sentenceID, nil
+	return rowsAffectedNumber, nil
 }

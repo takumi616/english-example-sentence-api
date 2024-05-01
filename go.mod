@@ -9,7 +9,6 @@ require (
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/google/go-cmp v0.6.0
 	github.com/lib/pq v1.10.9
-	github.com/takumi616/go-postgres-docker-restapi v0.0.0-20240428145019-13b9d12be1f1
 	golang.org/x/sync v0.6.0
 )
 
