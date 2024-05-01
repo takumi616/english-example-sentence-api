@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/lib/pq"
@@ -9,32 +10,43 @@ import (
 )
 
 func TestCreateNewSentence(t *testing.T) {
-	//Test request body
-	type requestBody struct {
+	//Expected returned value
+	type expected struct {
+		rowsAffectedNumber int64
+		errorMessage       error
+	}
+
+	type testdata struct {
 		body         string
 		vocabularies pq.StringArray
+		expected     expected
 	}
 
-	type testData struct {
-		//Expected returned value
-		expectedSentenceID int64
-		//Test request body
-		requestBody requestBody
-	}
+	testCases := map[string]testdata{}
 
 	//Case Ok
-	testCases := map[string]testData{}
-	testCases["ok"] = testData{
-		expectedSentenceID: 6,
-		requestBody: requestBody{
-			body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
-			vocabularies: pq.StringArray{"build", "deployment", "container"},
+	testCases["Ok"] = testdata{
+		body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
+		vocabularies: pq.StringArray{"build", "deployment", "container"},
+		expected: expected{
+			rowsAffectedNumber: 1,
+			errorMessage:       nil,
 		},
 	}
 
-	for name, testData := range testCases {
+	//Case Status internal server error
+	testCases["Internal server error"] = testdata{
+		body:         "In the realm of technology, the network serves as the backbone of communication, facilitating seamless data transfer between devices. At the heart of this exchange lies the database, a repository of structured information meticulously organized for efficient retrieval and manipulation. As data flows through the network, it finds refuge in the memory, transient yet vital, where it is temporarily stored and processed to fuel the operations of countless applications, orchestrating the dance of bytes across the digital landscape.",
+		vocabularies: pq.StringArray{"network", "database", "memory"},
+		expected: expected{
+			rowsAffectedNumber: 0,
+			errorMessage:       errors.New("pq: value too long for type character varying(120)"),
+		},
+	}
+
+	for name, testdata := range testCases {
 		name := name
-		testData := testData
+		testdata := testdata
 
 		//Run in parallel
 		t.Run(name, func(t *testing.T) {
@@ -44,23 +56,35 @@ func TestCreateNewSentence(t *testing.T) {
 
 			//Create mock and set mock function
 			ctx := context.Background()
+
 			moq := &SentenceInserterMock{}
 			moq.InsertNewSentenceFunc = func(ctx context.Context, sentence *entity.Sentence) (int64, error) {
-				return testData.expectedSentenceID, nil
+				if name == "Ok" {
+					return 1, nil
+				} else if name == "Internal server error" {
+					return 0, errors.New("pq: value too long for type character varying(120)")
+				} else {
+					return 0, errors.New("Not found matched test case")
+				}
 			}
 
 			//Call test target method using mock interface
 			c := &CreateSentence{Store: moq}
-			createdSentenceID, err := c.CreateNewSentence(ctx, testData.requestBody.vocabularies, testData.requestBody.body)
-			if err != nil {
-				t.Errorf("Failed to create new sentence: %v", err)
-			}
-
-			//Compare sentenceID
-			if createdSentenceID != testData.expectedSentenceID {
-				t.Errorf("Unexpected sentenceID. Expected: %d  Result: %d", testData.expectedSentenceID, createdSentenceID)
+			rowsAffectedNumber, err := c.CreateNewSentence(ctx, testdata.vocabularies, testdata.body)
+			if name == "Ok" {
+				if rowsAffectedNumber == testdata.expected.rowsAffectedNumber {
+					t.Log("Got an expected rows affected number")
+				} else {
+					t.Errorf("Failed to get an expected rows affected number: %v", err)
+				}
+			} else if name == "Internal server error" {
+				if err.Error() == testdata.expected.errorMessage.Error() {
+					t.Log("Got an expected error message")
+				} else {
+					t.Errorf("Failed to get an expected error message: %v", err)
+				}
 			} else {
-				t.Logf("Inserted sentence ID is: %d", createdSentenceID)
+				t.Error("Not found matched test case")
 			}
 		})
 	}
