@@ -4,36 +4,41 @@ import (
 	"context"
 	"errors"
 	"testing"
-
-	"github.com/lib/pq"
-	"github.com/takumi616/go-postgres-docker-restapi/entity"
 )
 
 func TestDeleteSentence(t *testing.T) {
-	//Prepare two test cases
-	testCases := map[string]entity.Sentence{}
+	//Expected returned value
+	type expected struct {
+		rowsAffectedNumber int64
+		errorMessage       error
+	}
+
+	type testdata struct {
+		expected expected
+	}
+
+	//Prepare test cases
+	testCases := map[string]testdata{}
 
 	//OK
-	testCases["ok"] = entity.Sentence{
-		SentenceID:   6,
-		Body:         "After completing the build process, the application is packaged into a container and ready for deployment.",
-		Vocabularies: pq.StringArray{"build", "deployment", "container"},
-		Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
-		Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+	testCases["Ok"] = testdata{
+		expected: expected{
+			rowsAffectedNumber: 1,
+			errorMessage:       nil,
+		},
 	}
 
-	//Error
-	testCases["error"] = entity.Sentence{
-		SentenceID:   5,
-		Body:         "The application communicates with the database server to retrieve and store data.",
-		Vocabularies: pq.StringArray{"application", "store", "server"},
-		Created:      "2024-04-06 20:16:35.47968413 +0000 UTC m=+25.323730179",
-		Updated:      "2024-04-06 20:16:35.47969263 +0000 UTC m=+25.323738679",
+	//Internal server error(No rows)
+	testCases["Internal server error"] = testdata{
+		expected: expected{
+			rowsAffectedNumber: 0,
+			errorMessage:       errors.New("sql: no rows in result set"),
+		},
 	}
 
-	for name, testSentence := range testCases {
+	for name, testdata := range testCases {
 		name := name
-		testSentence := testSentence
+		testdata := testdata
 		//Execute as parallel tests
 		//Run runs function as a subtest of t called name n(first parameter of Run)
 		//It runs function in a separate goroutine and blocks
@@ -48,21 +53,31 @@ func TestDeleteSentence(t *testing.T) {
 			ctx := context.Background()
 			moq := &SentenceDeleterMock{}
 			moq.DeleteSentenceFunc = func(ctx context.Context, sentenceID int64) (int64, error) {
-				if sentenceID == testSentence.SentenceID {
-					return sentenceID, nil
+				if name == "Ok" {
+					return 1, nil
+				} else if name == "Internal server error" {
+					return 0, errors.New("sql: no rows in result set")
+				} else {
+					return 0, errors.New("Not found matched test case.")
 				}
-				return 0, errors.New("sql: no rows in result set")
 			}
 
 			//Call test target method using mock interface
 			d := &DeleteSentence{Store: moq}
-			deletedSentenceID, err := d.DeleteSentence(ctx, "6")
-			if err != nil && err.Error() != "sql: no rows in result set" {
-				t.Errorf("Failed to get expected result: %v", err)
-			}
+			rowsAffectedNumber, err := d.DeleteSentence(ctx, "1")
 
-			if err == nil {
-				t.Logf("SentenceID of deleted sentence is: %d", deletedSentenceID)
+			if name == "Ok" {
+				if rowsAffectedNumber == testdata.expected.rowsAffectedNumber {
+					t.Log("Got an expected rows affected number")
+				} else {
+					t.Errorf("Failed to get an expected rows affected number: %v", err)
+				}
+			} else if name == "Internal server error" {
+				if err.Error() == testdata.expected.errorMessage.Error() {
+					t.Log("Got an expected error message")
+				} else {
+					t.Errorf("Failed to get an expected error message: %v", err)
+				}
 			}
 		})
 	}

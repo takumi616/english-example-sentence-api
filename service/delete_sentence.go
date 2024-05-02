@@ -20,11 +20,11 @@ func (d *DeleteSentence) DeleteSentence(ctx context.Context, id string) (int64, 
 	}
 
 	//Call store package's method, using interface
-	deleted, err := d.Store.DeleteSentence(ctx, int64(sentenceID))
+	rowsAffectedNumber, err := d.Store.DeleteSentence(ctx, int64(sentenceID))
 	if err != nil {
 		log.Printf("Error occurred in service package: %v", err)
 		return 0, err
 	}
 
-	return deleted, nil
+	return rowsAffectedNumber, nil
 }
