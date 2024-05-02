@@ -30,7 +30,7 @@ func (f *FetchSentence) FetchSingleSentence(ctx context.Context, id string) (ent
 	// Convert string into int
 	sentenceID, err := strconv.Atoi(id)
 	if err != nil {
-		log.Printf("Error occurred in service package: %v", err)
+		log.Printf("Failed to convert string type into int: %v", err)
 	}
 
 	// Call store package's method, using interface
